@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import json
 import datetime as dt
 import matplotlib.pyplot as plt
@@ -17,7 +19,7 @@ class Gain_Data():
         self.__leftbond = 0
         self.__rightbond = 2147483647
         self.__collect_data(path,uri)
-        
+
     def __collect_data(self,path,uri):
         if isinstance(path, (list,tuple)): lpath = path
         else: lpath = ([path])
@@ -26,7 +28,7 @@ class Gain_Data():
             with open(e,"r",encoding="utf-8") as jsonFile:
                 file = json.load(jsonFile)
                 jsonFile.close()
-            
+
             for f in file:
                 if uri:
                     if f["spotify_track_uri"]:
@@ -76,11 +78,11 @@ class Gain_Data():
                 i += 1
 
             if not match:
-                if aspect == "title": 
+                if aspect == "title":
                     streams_of += [{"title": e["title"],"artist": e["artist"],"album": e["album"],"streams": 0}]
-                elif aspect == "artist": 
+                elif aspect == "artist":
                     streams_of += [{"artist": e["artist"],"streams": 0,"title": [],"album": []}]
-                elif aspect == "album": 
+                elif aspect == "album":
                     streams_of += [{"album": e["album"],"artist": e["artist"],"streams": 0,"title": []}]
                 for j in range(len(e["timestamps"])):
                     if self.__in_period_of_time(e["timestamps"][j]):
@@ -125,7 +127,7 @@ class Gain_Data():
                 if items[i]["streams"] < items[i+1]["streams"]:
                     items[i], items[i+1] = items[i+1], items[i]
         return items
-    
+
     def get_sum(self):
         """return the sum of all streams in given period
         """
@@ -199,7 +201,7 @@ class Gain_Data():
                 if f == e["album"]:
                     ai = True
             if not ai: albums += [e["album"]]
-        
+
         file = open("names.txt", "a", encoding="utf8")
         file.write("ALL TITLES\n")
         for e in titles:
@@ -267,7 +269,7 @@ class output_Data():
         shows most played songs of chosen aspect \n
         whether to show titles, artists, albums and number of streams \n
         top n of chosen aspect and top m tracks \n
-        whether to show percentages 
+        whether to show percentages
         """
         array = self.data.get_streams_of(aspect)
         sum_all = self.sum_all
@@ -287,7 +289,7 @@ class output_Data():
                 string += ". Artist: " + array[i]["artist"]
                 if streams: string += ", Streams: " + str(array[i]["streams"])
                 if percentages: string += " (" + str(round(array[i]["streams"] / sum_all * 100,5)) + "% of all)"
-                if title: 
+                if title:
                     string += ", Most Played Songs: {1. " + array[i]["title"][0][0]
                     if album: string += " from " + array[i]["title"][0][2]
                     if streams: string += ", Streams: " + str(array[i]["title"][0][1])
@@ -317,7 +319,7 @@ class output_Data():
                 if artist: string += " from " + array[i]["artist"]
                 if streams: string += ", Streams: " + str(array[i]["streams"])
                 if percentages: string += " (" + str(round(array[i]["streams"] / sum_all * 100,5)) + "% of all)"
-                if title: 
+                if title:
                     string += ", Most Played Songs: {1. " + array[i]["title"][0][0]
                     if streams: string += ", Streams: " + str(array[i]["title"][0][1])
                     try:
@@ -347,14 +349,14 @@ class output_Data():
         name of the aspect \n
         whether to show titles, artists, albums and number of streams \n
         top n tracks \n
-        whether to show percentages 
+        whether to show percentages
         """
         array = self.data.get_streams_of(aspect)
         sum_all = self.sum_all
         match = False
         for e in array[1:]:
             if e[array[0][0]] == name:
-                if array[0][0] == "title": 
+                if array[0][0] == "title":
                     string = name
                     if artist: string += " from " + e["artist"]
                     if album: string += " from " + e["album"]
@@ -365,7 +367,7 @@ class output_Data():
                     string = name
                     if streams: string += ", Streams: " + str(e["streams"])
                     if percentages: string += " (" + str(round(e["streams"] / sum_all * 100,5)) + "% of all)"
-                    if title: 
+                    if title:
                         string += ", Most Played Songs: {1. " + e["title"][0][0]
                         if album: string += " from " + e["title"][0][2]
                         if streams: string += ", Streams: " + str(e["title"][0][1])
@@ -393,7 +395,7 @@ class output_Data():
                     if artist: string += " from " + e["artist"]
                     if streams: string += ", Streams: " + str(e["streams"])
                     if percentages: string += " (" + str(round(e["streams"] / sum_all * 100,5)) + "% of all)"
-                    if title: 
+                    if title:
                         string += ", Most Played Songs: {1. " + e["title"][0][0]
                         if streams: string += ", Streams: " + str(e["title"][0][1])
                         try:
@@ -413,9 +415,9 @@ class output_Data():
         ts = self.data.prepare_graph(aspect,name)
 
         pylab.gcf().canvas.manager.set_window_title(mode + " streams over time")
-        if ts[1] == "title": title = ts[2][2] + " from " + ts[2][0] + " from " + ts[2][1]
+        if ts[1] == "title": title = ts[2][1] + " - " + ts[2][2] + " (" + ts[2][0] + ")"
         elif ts[1] == "artist": title = ts[2][0]
-        elif ts[1] == "album": title = ts[2][1] + " from " + ts[2][0]
+        elif ts[1] == "album": title = ts[2][0] + " - " + ts[2][1]
         fig.autofmt_xdate()
         ax.set_title(title)
         ax.set_ylabel(mode + " streams")
@@ -423,7 +425,7 @@ class output_Data():
         plt.grid()
 
         return ax, ts[0]
-    
+
     def graph_abs(self,aspect,name):
         """aspects are "title", "artist" and "album" \n
         name of the aspect\n
@@ -433,7 +435,7 @@ class output_Data():
 
         y = list(np.linspace(0,len(x)-2,len(x)-1)) + [len(x)-2]
         ax.plot_date(x,y,"k")
-        
+
         ax.set_ylim(0)
         plt.show()
 
@@ -483,8 +485,7 @@ class output_Data():
         self.data.list_with_names()
 
 
-paths = ["c:\\Users\\Lulas\\Downloads\\MyData\\endsong_0.json","c:\\Users\\Lulas\\Downloads\\MyData\\endsong_1.json","c:\\Users\\Lulas\\Downloads\\MyData\\endsong_2.json","c:\\Users\\Lulas\\Downloads\\MyData\\endsong_3.json","c:\\Users\\Lulas\\Downloads\\MyData\\endsong_4.json","c:\\Users\\Lulas\\Downloads\\MyData\\endsong_5.json","c:\\Users\\Lulas\\Downloads\\MyData\\endsong_6.json","c:\\Users\\Lulas\\Downloads\\MyData\\endsong_7.json"]
-
+paths = ["/home/filip/Other/SpotifyData/2021-07/endsong_0.json","/home/filip/Other/SpotifyData/2021-07/endsong_1.json","/home/filip/Other/SpotifyData/2021-07/endsong_2.json","/home/filip/Other/SpotifyData/2021-07/endsong_3.json","/home/filip/Other/SpotifyData/2021-07/endsong_4.json","/home/filip/Other/SpotifyData/2021-07/endsong_5.json","/home/filip/Other/SpotifyData/2021-07/endsong_6.json"]
 
 ## methods are:
 ## print_top_songs prints most played songs, artists or albums,
@@ -496,3 +497,9 @@ paths = ["c:\\Users\\Lulas\\Downloads\\MyData\\endsong_0.json","c:\\Users\\Lulas
 ## set_bonds sets a timeframe,
 ## restore_bonds restores the default timeframe,
 ## list_with_names creates a list with all names
+
+d = output_Data(paths, False)
+
+
+#if __name__ == "__main__":
+    #d.graph_rel("artist", "Survive Said The Prophet")
