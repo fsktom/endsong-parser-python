@@ -408,17 +408,17 @@ class output_Data():
         if not match:
             print(name + " not found")
 
-    def __prep_graphs(self,aspect,name):
+    def __prep_graphs(self,aspect,name,mode):
         fig, ax = plt.subplots()
         ts = self.data.prepare_graph(aspect,name)
 
-        pylab.gcf().canvas.manager.set_window_title("absolute streams over time")
+        pylab.gcf().canvas.manager.set_window_title(mode + " streams over time")
         if ts[1] == "title": title = ts[2][2] + " from " + ts[2][0] + " from " + ts[2][1]
         elif ts[1] == "artist": title = ts[2][0]
         elif ts[1] == "album": title = ts[2][1] + " from " + ts[2][0]
         fig.autofmt_xdate()
         ax.set_title(title)
-        ax.set_ylabel("absolute streams")
+        ax.set_ylabel(mode + " streams")
         ax.set_xlim((ts[0][0],ts[0][-1]))
         plt.grid()
 
@@ -429,7 +429,7 @@ class output_Data():
         name of the aspect\n
         graph absolute listened over time
         """
-        ax, x = self.__prep_graphs(aspect,name)
+        ax, x = self.__prep_graphs(aspect,name,"absolute")
 
         y = list(np.linspace(0,len(x)-2,len(x)-1)) + [len(x)-2]
         ax.plot_date(x,y,"k")
@@ -442,7 +442,7 @@ class output_Data():
         name of the aspect \n
         graph relative listened over time
         """
-        ax, x = self.__prep_graphs(aspect,name)
+        ax, x = self.__prep_graphs(aspect,name,"relative")
 
         all_dy = []
         for i in range(len(x)):
