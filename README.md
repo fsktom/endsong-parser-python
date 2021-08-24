@@ -53,4 +53,4 @@ d.graph_abs("artist", "Sabaton")
 d.graph_rel(aspect, name)
 ```
 
-![Example Relaive Graph featuring Sabaton](img/sabaton-relative-graph.png "Example Relative Graph")
+![Example Relative Graph featuring Sabaton](img/sabaton-relative-graph.png "Example Relative Graph")
