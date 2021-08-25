@@ -39,18 +39,28 @@ There are two options for graphs: absolute and relative. The absolute graph is m
 d.graph_abs(aspect, name)
 ```
 
-e.g.
+<details>
+   <summary>Example</summary>
 
 ```python
 d.graph_abs("artist", "Sabaton")
 ```
 
 ![Example Absolute Graph featuring Sabaton](img/sabaton-absolute-graph.png "Example Absolute Graph")
+</details>
 
 #### Relative Graphs
 
 ```python
 d.graph_rel(aspect, name)
 ```
+   
+<details>
+   <summary>Example</summary>
+
+```python
+d.graph_rel("artist", "Sabaton")
+```
 
 ![Example Relative Graph featuring Sabaton](img/sabaton-relative-graph.png "Example Relative Graph")
+</details>
