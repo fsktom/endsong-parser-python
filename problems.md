@@ -9,6 +9,8 @@ Well, this script is not perfect. Here I will write about the problems that may 
 
 ## Suggestions
 
+- export the .json to a compaible format for [Last.fm Scrubbler](https://github.com/SHOEGAZEssb/Last.fm-Scrubbler-WPF) -> ListenBrainz
+- add the ability the view total time listened (in minutes/hours...)
 - change "title" aspect to "track"
 - change how the list is showed
 - podcast support (podcast listens are in `endsong.json` but are ignored by the script)
