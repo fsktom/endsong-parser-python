@@ -2,6 +2,8 @@
 
 Parser for Spotify `endsong.json` files made with Python
 
+This project uses Black for [Python](https://github.com/psf/black), [Prettier](https://github.com/prettier/prettier) for Markdown formatting and [Markdownlint](https://github.com/markdownlint/markdownlint) for linting markdown. The disabled rules are specified in [.markdownlint.json](.markdownlint.json)
+
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
 ## Why
@@ -39,7 +41,8 @@ There are two options for graphs: absolute and relative. The absolute graph is m
 d.graph_abs(aspect, name)
 ```
 
-e.g.
+<details>
+<summary>Example</summary>
 
 ```python
 d.graph_abs("artist", "Sabaton")
@@ -47,10 +50,21 @@ d.graph_abs("artist", "Sabaton")
 
 ![Example Absolute Graph featuring Sabaton](img/sabaton-absolute-graph.png "Example Absolute Graph")
 
+</details>
+
 #### Relative Graphs
 
 ```python
 d.graph_rel(aspect, name)
 ```
 
+<details>
+<summary>Example</summary>
+
+```python
+d.graph_rel("artist", "Sabaton")
+```
+
 ![Example Relative Graph featuring Sabaton](img/sabaton-relative-graph.png "Example Relative Graph")
+
+</details>
