@@ -1,4 +1,4 @@
-# Problems
+# Problems and Ideas
 
 Well, this script is not perfect. Here I will write about the problems that may come up, bugs and suggestions on what to add/change.
 
@@ -7,7 +7,7 @@ Well, this script is not perfect. Here I will write about the problems that may 
 - if two artists have the same name
   - possible solution: using the Spotify API
 
-## Suggestions
+## Suggestions / Ideas
 
 - export the .json to a compaible format for [Last.fm Scrubbler](https://github.com/SHOEGAZEssb/Last.fm-Scrubbler-WPF) -> ListenBrainz
 - add the ability the view total time listened (in minutes/hours...)
@@ -22,3 +22,7 @@ Well, this script is not perfect. Here I will write about the problems that may 
 - Spotify API
 - transformation into web app/mobile app
   - obviously not using Python
+- comparison of two graphs
+  - e.g. comparison of all-time listens of one artist vs the other 
+  - or one artist vs a specific song of that artist (to see what proportion that song has graphically)
+  - the larger scale would be taken 
