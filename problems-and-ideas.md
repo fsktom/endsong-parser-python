@@ -26,3 +26,4 @@ Well, this script is not perfect. Here I will write about the problems that may 
   - e.g. comparison of all-time listens of one artist vs the other 
   - or one artist vs a specific song of that artist (to see what proportion that song has graphically)
   - the larger scale would be taken 
+- input of paths via a `+paths.txt` or similar (see instaloader for comparison) where each line is a separate path
