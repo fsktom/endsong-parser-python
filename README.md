@@ -11,6 +11,10 @@ This project uses Black for [Python](https://github.com/psf/black), [Prettier](h
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
+## Internal links
+
+- [Problems and Ideas](problems-and-ideas.md)
+
 ## Why
 
 Lukas didn't want to use the [Spotistats app](https://spotistats.app/) to make the `endsong.json` files usable. So, in order extract the data and do something with it he wrote this script. At first it could only display the top artist/tracks, later you could search for specific tracks and now you can even view graphs showing the changes over time. I decided to modify this script to my own liking and here we are.
