@@ -29,3 +29,5 @@ Well, this script is not perfect. Here I will write about the problems that may 
 - input of paths via a `+paths.txt` or similar (see https://github.com/instaloader/instaloader for comparison) where each line is a separate path
 - add a `requirements.txt` file [gallery-dl example](https://github.com/mikf/gallery-dl/blob/master/requirements.txt)
 - add a `--help` argument (see https://github.com/mikf/gallery-dl or https://github.com/instaloader/instaloader)
+- https://github.com/tartley/colorama for colored text in terminal
+  - maybe to separate track, artist, album, no.?
