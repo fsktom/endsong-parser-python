@@ -347,118 +347,194 @@ class output_Data:
         self.last = self.data.get_last_of_data()
         self.all_timestamps = self.data.all_timestamps()
 
-    def print_top_songs(
+    def print_top(
         self,
-        aspect,
+        aspect="title",
         title=True,
         artist=True,
         album=False,
         streams=True,
-        mainindex=10,
-        secindex=5,
-        percentages=False,
+        primaryNum=10,
+        secondaryNum=5,
+        percent=False,
     ):
-        """prints most played songs, artists or albums \n
-        aspects are "title", "artist" and "album" \n
-        shows most played songs of chosen aspect \n
-        whether to show titles, artists, albums and number of streams \n
-        top n of chosen aspect and top m tracks \n
-        whether to show percentages
         """
-        array = self.data.get_streams_of(aspect)
-        sum_all = self.sum_all
+        Print top list of aspect
+
+        :param str aspect: Can be "title", "artist" or "album"
+        :param bool title: For aspects "artist" and "album": prints top secondaryNum songs of that aspect
+        :param bool artist: For aspects "title" and "album": prints the artist of that aspect
+        :param bool album: For aspect "title": prints the album the track is a part of
+                           For aspect "artist": prints the top secondaryNum albums of that artist
+        :param bool streams: Whether to show amount of total streams of chosen aspect
+        :param primaryNum: Show top primaryNum of chosen aspect
+        :param secondaryNum: see title and album
+        :param bool percent: Whether to show proportion of total streams of chosen aspect
+        """
+        dataArray = self.data.get_streams_of(aspect)
         print(
-            "Between "
-            + str(dt.datetime.utcfromtimestamp(array[0][1]) + dt.timedelta(hours=+1))
-            + " and "
-            + str(dt.datetime.utcfromtimestamp(array[0][2]) + dt.timedelta(hours=+1))
-            + ":"
+            "Between {0} and {1}:".format(
+                dt.datetime.utcfromtimestamp(dataArray[0][1]) + dt.timedelta(hours=+1),
+                dt.datetime.utcfromtimestamp(dataArray[0][2]) + dt.timedelta(hours=+1),
+            )
         )
-        if array[0][0] == "title":
-            for i in range(1, mainindex + 1):
-                string = str(i)
-                string += ". Title: " + array[i]["title"]
+        if dataArray[0][0] == "title":
+            print("--- TOP TRACKS ---")
+            for i in range(1, primaryNum + 1):
+                # for a nicer, more uniform list
+                order = str(i)
+                if primaryNum > 9:
+                    if i < 10:
+                        order = "0" + str(i)
+                if primaryNum > 99:
+                    if i < 10:
+                        order = "00" + str(i)
+                    elif i < 100:
+                        order = "0" + str(i)
+
+                outputString = "#" + order + ": "
+
                 if artist:
-                    string += " from " + array[i]["artist"]
-                if album:
-                    string += " from " + array[i]["album"]
+                    outputString += dataArray[i]["artist"] + " - "
+                outputString += dataArray[i]["title"]
+                if album and title:
+                    outputString += " | " + dataArray[i]["album"]
                 if streams:
-                    string += ", Streams: " + str(array[i]["streams"])
-                if percentages:
-                    string += (
-                        " ("
-                        + str(round(array[i]["streams"] / sum_all * 100, 5))
-                        + "% of all)"
+                    outputString += " | Streams: " + str(dataArray[i]["streams"])
+                if percent:
+                    outputString += (
+                        " | "
+                        + str(round(dataArray[i]["streams"] / self.sum_all * 100, 5))
+                        + "%"
+                        + " of all"
                     )
-                print(string)
-        elif array[0][0] == "artist":
-            for i in range(1, mainindex + 1):
-                string = str(i)
-                string += ". Artist: " + array[i]["artist"]
+                print(outputString)
+        elif dataArray[0][0] == "artist":
+            print("--- TOP ARTISTS ---")
+            for i in range(1, primaryNum + 1):
+                # for a nicer, more uniform list
+                order = str(i)
+                if primaryNum > 9:
+                    if i < 10:
+                        order = "0" + str(i)
+                if primaryNum > 99:
+                    if i < 10:
+                        order = "00" + str(i)
+                    elif i < 100:
+                        order = "0" + str(i)
+
+                outputString = "#" + order + ": "
+
+                outputString += dataArray[i]["artist"]
                 if streams:
-                    string += ", Streams: " + str(array[i]["streams"])
-                if percentages:
-                    string += (
-                        " ("
-                        + str(round(array[i]["streams"] / sum_all * 100, 5))
-                        + "% of all)"
+                    outputString += " | Streams: " + str(dataArray[i]["streams"])
+                if percent:
+                    outputString += (
+                        " |"
+                        + str(round(dataArray[i]["streams"] / self.sum_all * 100, 5))
+                        + "%"
+                        + " of all"
                     )
                 if title:
-                    string += ", Most Played Songs: {1. " + array[i]["title"][0][0]
+                    outputString += (
+                        "\n\tMost Played Songs: \n\t\t1. " + dataArray[i]["title"][0][0]
+                    )
                     if album:
-                        string += " from " + array[i]["title"][0][2]
+                        outputString += " | " + dataArray[i]["title"][0][2]
                     if streams:
-                        string += ", Streams: " + str(array[i]["title"][0][1])
+                        outputString += " | Streams: " + str(
+                            dataArray[i]["title"][0][1]
+                        )
                     try:
-                        for j in range(1, secindex):
-                            string += "; " + str(j + 1) + ". " + array[i]["title"][j][0]
+                        for j in range(1, secondaryNum):
+                            outputString += (
+                                "\n\t\t"
+                                + str(j + 1)
+                                + ". "
+                                + dataArray[i]["title"][j][0]
+                            )
                             if album:
-                                string += " from " + array[i]["title"][j][2]
+                                outputString += " | " + dataArray[i]["title"][j][2]
                             if streams:
-                                string += ", Streams: " + str(array[i]["title"][j][1])
+                                outputString += " | Streams: " + str(
+                                    dataArray[i]["title"][j][1]
+                                )
                     except IndexError:
                         pass
-                    string += "}"
                 if album:
-                    string += ", Most Played Albums: {1. " + array[i]["album"][0][0]
+                    outputString += (
+                        "\n\tMost Played Albums: \n\t\t1. "
+                        + dataArray[i]["album"][0][0]
+                    )
                     if streams:
-                        string += ", Streams: " + str(array[i]["album"][0][1])
+                        outputString += " | Streams: " + str(
+                            dataArray[i]["album"][0][1]
+                        )
                     try:
-                        for j in range(1, secindex):
-                            string += "; " + str(j + 1) + ". " + array[i]["album"][j][0]
+                        for j in range(1, secondaryNum):
+                            outputString += (
+                                "\n\t\t"
+                                + str(j + 1)
+                                + ". "
+                                + dataArray[i]["album"][j][0]
+                            )
                             if streams:
-                                string += ", Streams: " + str(array[i]["album"][j][1])
+                                outputString += " | Streams: " + str(
+                                    dataArray[i]["album"][j][1]
+                                )
                     except IndexError:
                         pass
-                    string += "}"
-                print(string)
-        elif array[0][0] == "album":
-            for i in range(1, mainindex + 1):
-                string = str(i)
-                string += ". album: " + array[i]["album"]
+                print(outputString)
+        elif dataArray[0][0] == "album":
+            print("--- TOP ALBUMS ---")
+            for i in range(1, primaryNum + 1):
+                # for a nicer, more uniform list
+                order = str(i)
+                if primaryNum > 9:
+                    if i < 10:
+                        order = "0" + str(i)
+                if primaryNum > 99:
+                    if i < 10:
+                        order = "00" + str(i)
+                    elif i < 100:
+                        order = "0" + str(i)
+
+                outputString = "#" + order + ": "
                 if artist:
-                    string += " from " + array[i]["artist"]
+                    outputString += dataArray[i]["artist"] + " - "
+                outputString += dataArray[i]["album"]
                 if streams:
-                    string += ", Streams: " + str(array[i]["streams"])
-                if percentages:
-                    string += (
-                        " ("
-                        + str(round(array[i]["streams"] / sum_all * 100, 5))
-                        + "% of all)"
+                    outputString += " | Streams: " + str(dataArray[i]["streams"])
+                if percent:
+                    outputString += (
+                        " | "
+                        + str(round(dataArray[i]["streams"] / self.sum_all * 100, 5))
+                        + "%"
+                        + " of all"
                     )
                 if title:
-                    string += ", Most Played Songs: {1. " + array[i]["title"][0][0]
+                    outputString += (
+                        "\n\tMost Played Songs: \n\t\t1. " + dataArray[i]["title"][0][0]
+                    )
                     if streams:
-                        string += ", Streams: " + str(array[i]["title"][0][1])
+                        outputString += " | Streams: " + str(
+                            dataArray[i]["title"][0][1]
+                        )
                     try:
-                        for j in range(1, secindex):
-                            string += "; " + str(j + 1) + ". " + array[i]["title"][j][0]
+                        for j in range(1, secondaryNum):
+                            outputString += (
+                                "\n\t\t"
+                                + str(j + 1)
+                                + ". "
+                                + dataArray[i]["title"][j][0]
+                            )
                             if streams:
-                                string += ", Streams: " + str(array[i]["title"][j][1])
+                                outputString += " | Streams: " + str(
+                                    dataArray[i]["title"][j][1]
+                                )
                     except:
                         pass
-                    string += "}"
-                print(string)
+                print(outputString)
 
     def print_sum(self):
         """prints total amount of listened tracks"""
@@ -501,12 +577,11 @@ class output_Data:
         top n tracks \n
         whether to show percentages
         """
-        array = self.data.get_streams_of(aspect)
-        sum_all = self.sum_all
+        dataArray = self.data.get_streams_of(aspect)
         match = False
-        for e in array[1:]:
-            if e[array[0][0]] == name:
-                if array[0][0] == "title":
+        for e in dataArray[1:]:
+            if e[dataArray[0][0]] == name:
+                if dataArray[0][0] == "title":
                     string = name
                     if artist:
                         string += " from " + e["artist"]
@@ -517,18 +592,18 @@ class output_Data:
                     if percentages:
                         string += (
                             " ("
-                            + str(round(e["streams"] / sum_all * 100, 5))
+                            + str(round(e["streams"] / self.sum_all * 100, 5))
                             + "% of all)"
                         )
                     print(string)
-                elif array[0][0] == "artist":
+                elif dataArray[0][0] == "artist":
                     string = name
                     if streams:
                         string += ", Streams: " + str(e["streams"])
                     if percentages:
                         string += (
                             " ("
-                            + str(round(e["streams"] / sum_all * 100, 5))
+                            + str(round(e["streams"] / self.sum_all * 100, 5))
                             + "% of all)"
                         )
                     if title:
@@ -560,7 +635,7 @@ class output_Data:
                             pass
                         string += "}"
                     print(string)
-                elif array[0][0] == "album":
+                elif dataArray[0][0] == "album":
                     string = name
                     if artist:
                         string += " from " + e["artist"]
@@ -569,7 +644,7 @@ class output_Data:
                     if percentages:
                         string += (
                             " ("
-                            + str(round(e["streams"] / sum_all * 100, 5))
+                            + str(round(e["streams"] / self.sum_all * 100, 5))
                             + "% of all)"
                         )
                     if title:
@@ -665,18 +740,8 @@ class output_Data:
         self.data.list_with_names()
 
 
-paths = [
-    "/home/filip/Other/SpotifyData/2021-07/endsong_0.json",
-    "/home/filip/Other/SpotifyData/2021-07/endsong_1.json",
-    "/home/filip/Other/SpotifyData/2021-07/endsong_2.json",
-    "/home/filip/Other/SpotifyData/2021-07/endsong_3.json",
-    "/home/filip/Other/SpotifyData/2021-07/endsong_4.json",
-    "/home/filip/Other/SpotifyData/2021-07/endsong_5.json",
-    "/home/filip/Other/SpotifyData/2021-07/endsong_6.json",
-]
-
 ## methods are:
-## print_top_songs prints most played songs, artists or albums,
+## print_top prints most played songs, artists or albums,
 ## print_aspect prints one name of aspect (eg. aspect="artist",name="Eminem" prints everything of Eminem),
 ## print_sum prints the total amount of listened tracks,
 ## print_first_last prints first or last song of the data,
@@ -686,4 +751,18 @@ paths = [
 ## restore_bonds restores the default timeframe,
 ## list_with_names creates a list with all names
 
-d = output_Data(paths, False)
+if __name__ == "__main__":
+
+    paths = "/home/filip/Other/SpotifyData/2021-07/endsong_0.json"
+
+    # paths = [
+    #     "/home/filip/Other/SpotifyData/2021-07/endsong_0.json",
+    #     "/home/filip/Other/SpotifyData/2021-07/endsong_1.json",
+    #     "/home/filip/Other/SpotifyData/2021-07/endsong_2.json",
+    #     "/home/filip/Other/SpotifyData/2021-07/endsong_3.json",
+    #     "/home/filip/Other/SpotifyData/2021-07/endsong_4.json",
+    #     "/home/filip/Other/SpotifyData/2021-07/endsong_5.json",
+    #     "/home/filip/Other/SpotifyData/2021-07/endsong_6.json",
+    # ]
+
+    d = output_Data(paths, False)
