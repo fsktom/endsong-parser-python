@@ -8,17 +8,30 @@ import matplotlib.pylab as pylab
 import matplotlib.pyplot as plt
 import numpy as np
 
+# docstrings: https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html
 
-class Gain_Data:
-    """absolute path or list of absolute paths to "endsong.json" files \n
-    if uri is True songs are identified by spotify id \n
-    else songs are identified by name und artist \n
-    with uri false album and single version will be interpreted as one
+
+class GatherData:
+    """Used for parsing data from endsong.json to a Python list of dictionaries
+
+    :param path: absolute path or list of absolute paths to "endsong.json" files
+    :type path: str, list
+    :param uri: if True: songs are identified by Sptofiy ID
+                if False: by name and artist
+                   (album and single versions are identified as one), defaults to True
+    :type uri: bool, optional
     """
 
     __slots__ = ["__info", "__leftbond", "__rightbond"]
 
     def __init__(self, path, uri=True) -> None:
+        """[summary]
+
+        :param path: [description]
+        :type path: [type]
+        :param uri: [description], defaults to True
+        :type uri: bool, optional
+        """
         self.__info = []
         self.__leftbond = 0
         self.__rightbond = 2147483647
@@ -335,7 +348,7 @@ class Gain_Data:
         return timestamps
 
 
-class output_Data:
+class DisplayData:
     """class to visualize data from endsong.json files"""
 
     def __init__(self, paths, uri=True) -> None:
@@ -344,7 +357,7 @@ class output_Data:
         else songs are identified by name und artist \n
         with uri false album and single version will be interpreted as one
         """
-        self.data = Gain_Data(paths, uri)
+        self.data = GatherData(paths, uri)
         self.sum_all = self.data.get_sum()
         self.first = self.data.get_first_ever()
         self.last = self.data.get_last_of_data()
@@ -773,4 +786,4 @@ if __name__ == "__main__":
     #     "/home/filip/Other/SpotifyData/2021-07/endsong_6.json",
     # ]
 
-    d = output_Data(paths, False)
+    d = DisplayData(paths, False)
