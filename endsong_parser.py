@@ -1,11 +1,12 @@
 #!/usr/bin/python3
 
-import json
 import datetime as dt
-import matplotlib.pyplot as plt
+import json
+from math import floor, log10
+
 import matplotlib.pylab as pylab
+import matplotlib.pyplot as plt
 import numpy as np
-from math import log10, floor
 
 
 class Gain_Data:
