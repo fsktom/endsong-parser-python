@@ -17,8 +17,8 @@ class GatherData:
     :param path: absolute path or list of absolute paths to "endsong.json" files
     :type path: str, list
     :param uri: if True: songs are identified by Sptofiy ID
-                if False: by name and artist
-                   (album and single versions are identified as one), defaults to True
+        if False: by name and artist
+        (album and single versions are identified as one), defaults to True
     :type uri: bool, optional
     """
 
