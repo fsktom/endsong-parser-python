@@ -31,3 +31,7 @@ gayy
     :members:
 .. autoclass:: DisplayData
     :members:
+
+.. automodule:: endsong_parser
+    :noindex:
+    :members: init

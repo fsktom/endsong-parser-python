@@ -14,9 +14,11 @@ import numpy as np
 class GatherData:
     """Used for parsing data from endsong.json to a Python list of dictionaries
 
+    **WARNING**: uri=False *MAY* mix stuff up if artists have the same name
+
     :param path: absolute path or list of absolute paths to "endsong.json" files
     :type path: str or list
-    :param uri: if True: songs are identified by Sptofiy ID;
+    :param uri: if True: songs are identified by Spotify ID;
         if False: by name and artist
         (album and single versions are identified as one), defaults to True
     :type uri: bool, optional
@@ -379,16 +381,12 @@ class GatherData:
 class DisplayData:
     """Used for visualizing the endsong.json data parsed in :class:`GatherData`
 
-    :param path: absolute path or list of absolute paths to "endsong.json" files
-    :type path: str or list
-    :param uri: if True: songs are identified by Sptofiy ID;
-        if False: by name and artist
-        (album and single versions are identified as one), defaults to True
-    :type uri: bool, optional
+    :param gatheredData: object created using :class:`GatherData` class
+    :type gatheredData: GatherData
     """
 
-    def __init__(self, paths, uri=True) -> None:
-        self.data = GatherData(paths, uri)
+    def __init__(self, gatheredData) -> None:
+        self.data = gatheredData
         self.sum_all = self.data.get_sum()
         self.first = self.data.get_first_ever()
         self.last = self.data.get_last_of_data()
@@ -431,7 +429,7 @@ class DisplayData:
             print("--- TOP TRACKS ---")
             for i in range(1, primaryNum + 1):
                 # for a nicer, more uniform list
-                outputString = topOrder(i, primaryNum)
+                outputString = self.topOrder(i, primaryNum)
 
                 if artist:
                     outputString += dataArray[i]["artist"] + " - "
@@ -452,7 +450,7 @@ class DisplayData:
             print("--- TOP ARTISTS ---")
             for i in range(1, primaryNum + 1):
                 # for a nicer, more uniform list
-                outputString = topOrder(i, primaryNum)
+                outputString = self.topOrder(i, primaryNum)
 
                 outputString += dataArray[i]["artist"]
                 if streams:
@@ -518,7 +516,7 @@ class DisplayData:
             print("--- TOP ALBUMS ---")
             for i in range(1, primaryNum + 1):
                 # for a nicer, more uniform list
-                outputString = topOrder(i, primaryNum)
+                outputString = self.topOrder(i, primaryNum)
 
                 if artist:
                     outputString += dataArray[i]["artist"] + " - "
@@ -767,35 +765,52 @@ class DisplayData:
         """creates a file that contains all titles, artists and albums"""
         self.data.list_with_names()
 
+    def topOrder(order, maxNum) -> str:
+        """
+        Formats position of aspect for better display.
+        If it were to display e.g. 100 tracks,
+        this function would change ``"#1"`` to ``"  #1"`` to match up with ``"#100"``
 
-def topOrder(order, maxNum) -> str:
+        :param int order: actual position of aspect
+        :param int maxNum: top maxNum of aspect
+        :return: nicely formatted position string for better display
+        :rtype: str
+        """
+
+        orderFormat = ""
+
+        # https://stackoverflow.com/a/6769458/6694963
+        numOfZero = floor(log10(maxNum))
+
+        # efficient way to get number of digits of a number
+        # https://stackoverflow.com/a/2189827/6694963
+        digits = int(log10(order)) + 1
+
+        while numOfZero != 0:
+            if digits <= numOfZero:
+                orderFormat += " "
+            numOfZero -= 1
+
+        orderFormat += "#" + str(order) + ": "
+
+        return orderFormat
+
+
+
+
+def init(paths, uri=False):
+    """The function used for creating an object used for further
+    visualization of data
+
+    :param paths: Either a single absolute path to endsong.json
+        or list of paths to multiple endsong_x.json files
+    :type paths: str or list
+    :param uri: see :class:`GatherData`
+    :type uri: bool, optional
+    :return: a DisplayData object used to visualize data
+    :rtype: DisplayData
     """
-    Formats position of aspect for better display.
-    If it were to display e.g. 100 tracks,
-    this function would change "#1" to "  #1" to match up with "#100"
-
-    :param int order: actual position of aspect
-    :param int maxNum: top maxNum of aspect
-    :return: nicely formatted position for better display
-    """
-
-    orderFormat = ""
-
-    # https://stackoverflow.com/a/6769458/6694963
-    numOfZero = floor(log10(maxNum))
-
-    # efficient way to get number of digits of a number
-    # https://stackoverflow.com/a/2189827/6694963
-    digits = int(log10(order)) + 1
-
-    while numOfZero != 0:
-        if digits <= numOfZero:
-            orderFormat += " "
-        numOfZero -= 1
-
-    orderFormat += "#" + str(order) + ": "
-
-    return orderFormat
+    return DisplayData(GatherData(paths))
 
 
 ## methods are:
@@ -823,4 +838,4 @@ if __name__ == "__main__":
     #     "/home/filip/Other/SpotifyData/2021-07/endsong_6.json",
     # ]
 
-    d = DisplayData(paths, False)
+    d = init(paths)
