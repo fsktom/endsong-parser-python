@@ -15,8 +15,8 @@ class GatherData:
     """Used for parsing data from endsong.json to a Python list of dictionaries
 
     :param path: absolute path or list of absolute paths to "endsong.json" files
-    :type path: str, list
-    :param uri: if True: songs are identified by Sptofiy ID
+    :type path: str or list
+    :param uri: if True: songs are identified by Sptofiy ID;
         if False: by name and artist
         (album and single versions are identified as one), defaults to True
     :type uri: bool, optional
@@ -25,13 +25,6 @@ class GatherData:
     __slots__ = ["__info", "__leftbond", "__rightbond"]
 
     def __init__(self, path, uri=True) -> None:
-        """[summary]
-
-        :param path: [description]
-        :type path: [type]
-        :param uri: [description], defaults to True
-        :type uri: bool, optional
-        """
         self.__info = []
         self.__leftbond = 0
         self.__rightbond = 2147483647
@@ -102,10 +95,19 @@ class GatherData:
             self.__info[i]["streams"] = len(self.__info[i]["timestamps"])
 
     def get_streams_of(self, aspect="title") -> list:
-        """return all of aspect ordered by number of streams \n
-        aspects are "title", "artist" and "album" \n
-        set specific period of time via "set_bonds"
+        """Returns all of a specfic aspect from dataset ordered by
+        number of streams.
+
+        Use "set_bonds" to set a specific date range
+
+        :param aspect: desired aspect, can be "title", "album"
+            or "artist", defaults to "title"
+        :type aspect: str, optional
+        :return: array of dictionaries, where each dictionary is a single
+            song with attributes "title", "artist", "album" and "streams"
+        :rtype: list[dict]
         """
+
         streams_of = [[aspect, self.__leftbond, self.__rightbond]]
         for e in self.__info:
             i = 1
@@ -199,7 +201,11 @@ class GatherData:
         return items
 
     def get_sum(self) -> int:
-        """return the sum of all streams in given period"""
+        """Return sum of streams in the given time period
+
+        :return: sum of streams
+        :rtype: int
+        """
         sum_listened = 0
         for e in self.__info:
             for i in range(len(e["timestamps"])):
@@ -236,21 +242,33 @@ class GatherData:
             return False
 
     def set_bonds(self, earliest, latest) -> None:
-        """set a time frame \n
-        format: yyyy.mm.dd-hh.mm.ss \n
-        default is 1970.01.01 till time ends \n
-        hh.mm.ss is optional
+        """Set the desired time frame
+
+        ``-hh.mm.ss`` is optional
+
+        :param earliest: date in "yyyy.mm.dd-hh.mm.ss" format
+        :type earliest: str
+        :param latest: date in "yyyy.mm.dd-hh.mm.ss" format
+        :type latest: str
         """
         self.__leftbond = self.__convert_to_unix(earliest, -1)
         self.__rightbond = self.__convert_to_unix(latest, -1)
 
     def restore_bonds(self) -> None:
-        """restores default"""
+        """Restores default bonda for date range
+        (Unix time min and max)
+        """
         self.__leftbond = 0
         self.__rightbond = 2147483647
 
     def get_first_ever(self) -> tuple:
-        """returns first streamed song of endsong.json"""
+        """Returns first ever streamed song listed in endsong.json
+
+        :return: tuple of first ever streamed song with the song dictionary
+            and the date as Unix timestamp;
+            Note: "timestamps" value is a list of dates
+        :rtype: tuple[dict, float]
+        """
         earliest = 2147483647
         for i in range(len(self.__info)):
             for j in range(len(self.__info[i]["timestamps"])):
@@ -260,7 +278,13 @@ class GatherData:
         return (ret, earliest)
 
     def get_last_of_data(self) -> tuple:
-        """returns last streamed song of endsong.json"""
+        """Returns the most recently streamed song listed in endsong.json
+
+        :return: tuple of the most recently streamed song with the song
+            dictionary and the date as Unix timestamp;
+            Note: "timestamps" value is a list of dates
+        :rtype: tuple[dict, float]
+        """
         latest = 0
         for i in range(len(self.__info)):
             for j in range(len(self.__info[i]["timestamps"])):
@@ -270,7 +294,7 @@ class GatherData:
         return (ret, latest)
 
     def list_with_names(self) -> None:
-        """creates a file that contains all titles, artists and albums"""
+        """Creates a .txt file that contains all track names, artists and albums"""
         titles, artists, albums = [], [], []
         for e in self.__info:
             titles += [e["title"]]
@@ -340,7 +364,11 @@ class GatherData:
         ]
 
     def all_timestamps(self) -> list:
-        """returns list of all timestamps"""
+        """Returns list of all timestamps
+
+        :return: list of all timestamps in endsong.json
+        :rtype: list
+        """
         timestamps = []
         for e in self.__info:
             for f in e["timestamps"]:
@@ -349,14 +377,17 @@ class GatherData:
 
 
 class DisplayData:
-    """class to visualize data from endsong.json files"""
+    """Used for visualizing the endsong.json data parsed in :class:`GatherData`
+
+    :param path: absolute path or list of absolute paths to "endsong.json" files
+    :type path: str or list
+    :param uri: if True: songs are identified by Sptofiy ID;
+        if False: by name and artist
+        (album and single versions are identified as one), defaults to True
+    :type uri: bool, optional
+    """
 
     def __init__(self, paths, uri=True) -> None:
-        """absolute path or list of absolute paths to "endsong.json" files \n
-        if uri is True songs are identified by spotify id \n
-        else songs are identified by name und artist \n
-        with uri false album and single version will be interpreted as one
-        """
         self.data = GatherData(paths, uri)
         self.sum_all = self.data.get_sum()
         self.first = self.data.get_first_ever()
@@ -375,16 +406,18 @@ class DisplayData:
         percent=False,
     ) -> None:
         """
-        Print top list of aspect
+        Prints top list of aspect
 
         :param str aspect: Can be "title", "artist" or "album"
-        :param bool title: For aspects "artist" and "album": prints top secondaryNum songs of that aspect
-        :param bool artist: For aspects "title" and "album": prints the artist of that aspect
-        :param bool album: For aspect "title": prints the album the track is a part of
-                           For aspect "artist": prints the top secondaryNum albums of that artist
+        :param bool title: For aspects "artist" and "album": prints top
+            secondaryNum songs of that aspect
+        :param bool artist: For aspects "title" and "album": prints the
+            artist of that aspect
+        :param bool album: For aspect "title": prints the album the track is a part of;
+            For aspect "artist": prints the top secondaryNum albums of that artist
         :param bool streams: Whether to show amount of total streams of chosen aspect
-        :param primaryNum: Show top primaryNum of chosen aspect
-        :param secondaryNum: see title and album
+        :param int primaryNum: Show top primaryNum of chosen aspect
+        :param int secondaryNum: see title and album parameters
         :param bool percent: Whether to show proportion of total streams of chosen aspect
         """
         dataArray = self.data.get_streams_of(aspect)
@@ -715,10 +748,14 @@ class DisplayData:
         plt.show()
 
     def set_bonds(self, earliest, latest) -> None:
-        """set a time frame \n
-        format: yyyy.mm.dd-hh.mm.ss \n
-        default is 1970.01.01 till time ends \n
-        hh.mm.ss is optional
+        """Set the desired time frame
+
+        ``-hh.mm.ss`` is optional
+
+        :param earliest: date in "yyyy.mm.dd-hh.mm.ss" format
+        :type earliest: str
+        :param latest: date in "yyyy.mm.dd-hh.mm.ss" format
+        :type latest: str
         """
         self.data.set_bonds(earliest, latest)
 
