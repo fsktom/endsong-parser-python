@@ -5,6 +5,7 @@ import datetime as dt
 import matplotlib.pyplot as plt
 import matplotlib.pylab as pylab
 import numpy as np
+from math import log10, floor
 
 
 class Gain_Data:
@@ -350,7 +351,7 @@ class output_Data:
     def print_top(
         self,
         aspect="title",
-        title=True,
+        title=False,
         artist=True,
         album=False,
         streams=True,
@@ -382,17 +383,7 @@ class output_Data:
             print("--- TOP TRACKS ---")
             for i in range(1, primaryNum + 1):
                 # for a nicer, more uniform list
-                order = str(i)
-                if primaryNum > 9:
-                    if i < 10:
-                        order = "0" + str(i)
-                if primaryNum > 99:
-                    if i < 10:
-                        order = "00" + str(i)
-                    elif i < 100:
-                        order = "0" + str(i)
-
-                outputString = "#" + order + ": "
+                outputString = topOrder(i, primaryNum)
 
                 if artist:
                     outputString += dataArray[i]["artist"] + " - "
@@ -413,17 +404,7 @@ class output_Data:
             print("--- TOP ARTISTS ---")
             for i in range(1, primaryNum + 1):
                 # for a nicer, more uniform list
-                order = str(i)
-                if primaryNum > 9:
-                    if i < 10:
-                        order = "0" + str(i)
-                if primaryNum > 99:
-                    if i < 10:
-                        order = "00" + str(i)
-                    elif i < 100:
-                        order = "0" + str(i)
-
-                outputString = "#" + order + ": "
+                outputString = topOrder(i, primaryNum)
 
                 outputString += dataArray[i]["artist"]
                 if streams:
@@ -489,17 +470,8 @@ class output_Data:
             print("--- TOP ALBUMS ---")
             for i in range(1, primaryNum + 1):
                 # for a nicer, more uniform list
-                order = str(i)
-                if primaryNum > 9:
-                    if i < 10:
-                        order = "0" + str(i)
-                if primaryNum > 99:
-                    if i < 10:
-                        order = "00" + str(i)
-                    elif i < 100:
-                        order = "0" + str(i)
+                outputString = topOrder(i, primaryNum)
 
-                outputString = "#" + order + ": "
                 if artist:
                     outputString += dataArray[i]["artist"] + " - "
                 outputString += dataArray[i]["album"]
@@ -738,6 +710,36 @@ class output_Data:
     def list_with_names(self):
         """creates a file that contains all titles, artists and albums"""
         self.data.list_with_names()
+
+
+def topOrder(order, maxNum) -> str:
+    """
+    Formats position of aspect for better display.
+    If it were to display e.g. 100 tracks,
+    this function would change "#1" to "  #1" to match up with "#100"
+
+    :param int order: actual position of aspect
+    :param int maxNum: top maxNum of aspect
+    :return: nicely formatted position for better display
+    """
+
+    orderFormat = ""
+
+    # https://stackoverflow.com/a/6769458/6694963
+    numOfZero = floor(log10(maxNum))
+
+    # efficient way to get number of digits of a number
+    # https://stackoverflow.com/a/2189827/6694963
+    digits = int(log10(order)) + 1
+
+    while numOfZero != 0:
+        if digits <= numOfZero:
+            orderFormat += " "
+        numOfZero -= 1
+
+    orderFormat += "#" + str(order) + ": "
+
+    return orderFormat
 
 
 ## methods are:

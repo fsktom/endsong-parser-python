@@ -34,3 +34,4 @@ Well, this script is not perfect. Here I will write about the problems that may 
 - docstrings - how to properly format them (conventions)
   - [Sphinx markup](https://stackoverflow.com/a/40596167/6694963)
   - [This](https://stackoverflow.com/a/10065932/6694963) or [that](https://stackoverflow.com/a/9195565/6694963)
+- for `print_top()` and others: add argument for date range
