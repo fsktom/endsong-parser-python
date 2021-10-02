@@ -31,6 +31,9 @@ Well, this script is not perfect. Here I will write about the problems that may 
 - add a `--help` argument (see https://github.com/mikf/gallery-dl or https://github.com/instaloader/instaloader)
 - https://github.com/tartley/colorama for colored text in terminal
   - maybe to separate track, artist, album, no.?
+- DOCSTRINGS
+  - [compare Spotipy](https://github.com/plamere/spotipy) - [their readthedocs](https://spotipy.readthedocs.io/)
+  - [and this amazing video](https://youtu.be/JQ8RQru-Y9Y)
 - docstrings - how to properly format them (conventions)
   - [Sphinx markup](https://stackoverflow.com/a/40596167/6694963)
     - [see this guide for writing docstrings from Sphinx docs](https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html)
