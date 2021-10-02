@@ -18,13 +18,13 @@ class Gain_Data:
 
     __slots__ = ["__info", "__leftbond", "__rightbond"]
 
-    def __init__(self, path, uri=True):
+    def __init__(self, path, uri=True) -> None:
         self.__info = []
         self.__leftbond = 0
         self.__rightbond = 2147483647
         self.__collect_data(path, uri)
 
-    def __collect_data(self, path, uri):
+    def __collect_data(self, path, uri) -> None:
         if isinstance(path, (list, tuple)):
             lpath = path
         else:
@@ -88,7 +88,7 @@ class Gain_Data:
         for i in range(len(self.__info)):
             self.__info[i]["streams"] = len(self.__info[i]["timestamps"])
 
-    def get_streams_of(self, aspect="title"):
+    def get_streams_of(self, aspect="title") -> list:
         """return all of aspect ordered by number of streams \n
         aspects are "title", "artist" and "album" \n
         set specific period of time via "set_bonds"
@@ -175,16 +175,17 @@ class Gain_Data:
                                 e["album"][i + 1],
                                 e["album"][i],
                             )
+        # returns list of dicts
         return self.__sort_by_streams(streams_of)
 
-    def __sort_by_streams(self, items):
+    def __sort_by_streams(self, items) -> list:
         for _ in range(1, len(items) - 1):
             for i in range(1, len(items) - 1):
                 if items[i]["streams"] < items[i + 1]["streams"]:
                     items[i], items[i + 1] = items[i + 1], items[i]
         return items
 
-    def get_sum(self):
+    def get_sum(self) -> int:
         """return the sum of all streams in given period"""
         sum_listened = 0
         for e in self.__info:
@@ -193,7 +194,7 @@ class Gain_Data:
                     sum_listened += 1
         return sum_listened
 
-    def __convert_to_unix(self, ts, offset=0):
+    def __convert_to_unix(self, ts, offset=0) -> float:
         try:
             return (
                 dt.datetime(
@@ -212,7 +213,7 @@ class Gain_Data:
                 int(ts[:4]), int(ts[5:7]), int(ts[8:10]), tzinfo=dt.timezone.utc
             ).timestamp()
 
-    def __in_period_of_time(self, ts):
+    def __in_period_of_time(self, ts) -> bool:
         if (
             self.__convert_to_unix(ts) >= self.__leftbond
             and self.__convert_to_unix(ts) <= self.__rightbond
@@ -221,7 +222,7 @@ class Gain_Data:
         else:
             return False
 
-    def set_bonds(self, earliest, latest):
+    def set_bonds(self, earliest, latest) -> None:
         """set a time frame \n
         format: yyyy.mm.dd-hh.mm.ss \n
         default is 1970.01.01 till time ends \n
@@ -230,12 +231,12 @@ class Gain_Data:
         self.__leftbond = self.__convert_to_unix(earliest, -1)
         self.__rightbond = self.__convert_to_unix(latest, -1)
 
-    def restore_bonds(self):
+    def restore_bonds(self) -> None:
         """restores default"""
         self.__leftbond = 0
         self.__rightbond = 2147483647
 
-    def get_first_ever(self):
+    def get_first_ever(self) -> tuple:
         """returns first streamed song of endsong.json"""
         earliest = 2147483647
         for i in range(len(self.__info)):
@@ -245,7 +246,7 @@ class Gain_Data:
                     ret = self.__info[i]
         return (ret, earliest)
 
-    def get_last_of_data(self):
+    def get_last_of_data(self) -> tuple:
         """returns last streamed song of endsong.json"""
         latest = 0
         for i in range(len(self.__info)):
@@ -255,7 +256,7 @@ class Gain_Data:
                     ret = self.__info[i]
         return (ret, latest)
 
-    def list_with_names(self):
+    def list_with_names(self) -> None:
         """creates a file that contains all titles, artists and albums"""
         titles, artists, albums = [], [], []
         for e in self.__info:
@@ -286,7 +287,7 @@ class Gain_Data:
         file.close()
         print("saved as names.txt")
 
-    def prepare_graph(self, aspect, name):
+    def prepare_graph(self, aspect, name) -> list:
         """prepares data to put in a graph \n
         aspects are "title", "artist" and "album" \n
         name of the aspect
@@ -325,7 +326,7 @@ class Gain_Data:
             string,
         ]
 
-    def all_timestamps(self):
+    def all_timestamps(self) -> list:
         """returns list of all timestamps"""
         timestamps = []
         for e in self.__info:
@@ -337,7 +338,7 @@ class Gain_Data:
 class output_Data:
     """class to visualize data from endsong.json files"""
 
-    def __init__(self, paths, uri=True):
+    def __init__(self, paths, uri=True) -> None:
         """absolute path or list of absolute paths to "endsong.json" files \n
         if uri is True songs are identified by spotify id \n
         else songs are identified by name und artist \n
@@ -359,7 +360,7 @@ class output_Data:
         primaryNum=10,
         secondaryNum=5,
         percent=False,
-    ):
+    ) -> None:
         """
         Print top list of aspect
 
@@ -509,11 +510,15 @@ class output_Data:
                         pass
                 print(outputString)
 
-    def print_sum(self):
-        """prints total amount of listened tracks"""
-        print("You listened to " + str(self.sum_all) + " songs")
+    def print_sum(self) -> None:
+        """
+        Prints total amount of listens
+        """
+        # https://queirozf.com/entries/python-number-formatting-examples#use-commas-as-thousands-separator
+        # e.g. 1000000 -> 1,000,000
+        print("You have listened to {:,} songs!".format(self.sum_all))
 
-    def print_first_last(self, fl=True):
+    def print_first_last(self, fl=True) -> None:
         """first song true, last song false"""
         if fl:
             song = self.first
@@ -542,7 +547,7 @@ class output_Data:
         streams=True,
         index=5,
         percentages=False,
-    ):
+    ) -> None:
         """prints one name of aspect (eg. aspect="artist",name="Eminem" prints everything of Eminem) \n
         aspects are "title", "artist" and "album" \n
         name of the aspect \n
@@ -637,7 +642,7 @@ class output_Data:
         if not match:
             print(name + " not found")
 
-    def __prep_graphs(self, aspect, name, mode):
+    def __prep_graphs(self, aspect, name, mode) -> None:
         fig, ax = plt.subplots()
         ts = self.data.prepare_graph(aspect, name)
 
@@ -656,7 +661,7 @@ class output_Data:
 
         return ax, ts[0]
 
-    def graph_abs(self, aspect, name):
+    def graph_abs(self, aspect, name) -> None:
         """aspects are "title", "artist" and "album" \n
         name of the aspect\n
         graph absolute listened over time
@@ -669,7 +674,7 @@ class output_Data:
         ax.set_ylim(0)
         plt.show()
 
-    def graph_rel(self, aspect, name):
+    def graph_rel(self, aspect, name) -> None:
         """aspects are "title", "artist" and "album" \n
         name of the aspect \n
         graph relative listened over time
@@ -696,7 +701,7 @@ class output_Data:
         ax.set_ylim(0)
         plt.show()
 
-    def set_bonds(self, earliest, latest):
+    def set_bonds(self, earliest, latest) -> None:
         """set a time frame \n
         format: yyyy.mm.dd-hh.mm.ss \n
         default is 1970.01.01 till time ends \n
@@ -704,11 +709,11 @@ class output_Data:
         """
         self.data.set_bonds(earliest, latest)
 
-    def restore_bonds(self):
+    def restore_bonds(self) -> None:
         """restores default"""
         self.data.restore_bonds()
 
-    def list_with_names(self):
+    def list_with_names(self) -> None:
         """creates a file that contains all titles, artists and albums"""
         self.data.list_with_names()
 
