@@ -14,13 +14,13 @@ import numpy as np
 class GatherData:
     """Used for parsing data from endsong.json to a Python list of dictionaries
 
-    **WARNING**: uri=False *MAY* mix stuff up if artists have the same name
+    **WARNING**: ``uri=False`` *MAY* mix stuff up if artists have the same name
 
-    :param path: absolute path or list of absolute paths to "endsong.json" files
+    :param path: absolute path or list of absolute paths to ``endsong.json`` files
     :type path: str or list
-    :param uri: if True: songs are identified by Spotify ID;
-        if False: by name and artist
-        (album and single versions are identified as one), defaults to True
+    :param uri: if *True*: songs are identified by Spotify ID;
+        if *False*: by name and artist
+        (album and single versions are identified as one), defaults to *True*
     :type uri: bool, optional
     """
 
@@ -418,6 +418,36 @@ class DisplayData:
         :param int secondaryNum: see title and album parameters
         :param bool percent: Whether to show proportion of total streams of chosen aspect
         """
+        def topOrder(order, maxNum) -> str:
+            """
+            Formats position of aspect for better display.
+            If it were to display e.g. 100 tracks,
+            this function would change ``"#1"`` to ``"  #1"`` to match up with ``"#100"``
+
+            :param int order: actual position of aspect
+            :param int maxNum: top maxNum of aspect
+            :return: nicely formatted position string for better display
+            :rtype: str
+            """
+
+            orderFormat = ""
+
+            # https://stackoverflow.com/a/6769458/6694963
+            numOfZero = floor(log10(maxNum))
+
+            # efficient way to get number of digits of a number
+            # https://stackoverflow.com/a/2189827/6694963
+            digits = int(log10(order)) + 1
+
+            while numOfZero != 0:
+                if digits <= numOfZero:
+                    orderFormat += " "
+                numOfZero -= 1
+
+            orderFormat += "#" + str(order) + ": "
+
+            return orderFormat
+
         dataArray = self.data.get_streams_of(aspect)
         print(
             "Between {0} and {1}:".format(
@@ -429,7 +459,7 @@ class DisplayData:
             print("--- TOP TRACKS ---")
             for i in range(1, primaryNum + 1):
                 # for a nicer, more uniform list
-                outputString = self.topOrder(i, primaryNum)
+                outputString = topOrder(i, primaryNum)
 
                 if artist:
                     outputString += dataArray[i]["artist"] + " - "
@@ -450,7 +480,7 @@ class DisplayData:
             print("--- TOP ARTISTS ---")
             for i in range(1, primaryNum + 1):
                 # for a nicer, more uniform list
-                outputString = self.topOrder(i, primaryNum)
+                outputString = topOrder(i, primaryNum)
 
                 outputString += dataArray[i]["artist"]
                 if streams:
@@ -516,7 +546,7 @@ class DisplayData:
             print("--- TOP ALBUMS ---")
             for i in range(1, primaryNum + 1):
                 # for a nicer, more uniform list
-                outputString = self.topOrder(i, primaryNum)
+                outputString = topOrder(i, primaryNum)
 
                 if artist:
                     outputString += dataArray[i]["artist"] + " - "
@@ -765,42 +795,15 @@ class DisplayData:
         """creates a file that contains all titles, artists and albums"""
         self.data.list_with_names()
 
-    def topOrder(self, order, maxNum) -> str:
-        """
-        Formats position of aspect for better display.
-        If it were to display e.g. 100 tracks,
-        this function would change ``"#1"`` to ``"  #1"`` to match up with ``"#100"``
-
-        :param int order: actual position of aspect
-        :param int maxNum: top maxNum of aspect
-        :return: nicely formatted position string for better display
-        :rtype: str
-        """
-
-        orderFormat = ""
-
-        # https://stackoverflow.com/a/6769458/6694963
-        numOfZero = floor(log10(maxNum))
-
-        # efficient way to get number of digits of a number
-        # https://stackoverflow.com/a/2189827/6694963
-        digits = int(log10(order)) + 1
-
-        while numOfZero != 0:
-            if digits <= numOfZero:
-                orderFormat += " "
-            numOfZero -= 1
-
-        orderFormat += "#" + str(order) + ": "
-
-        return orderFormat
-
-
-
 
 def init(paths, uri=False):
     """The function used for creating an object used for further
     visualization of data
+
+    Creates a :class:`GatherData` object with ``paths`` argument and
+    passes it to create a :class:`DisplayData` object. Returns the
+    created object to be used for further data visualization by
+    using its methods.
 
     :param paths: Either a single absolute path to endsong.json
         or list of paths to multiple endsong_x.json files
