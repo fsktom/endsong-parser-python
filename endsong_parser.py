@@ -11,6 +11,9 @@ import numpy as np
 # docstrings: https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html
 
 # TODO: add examples to docstrings??
+# TODO: run pylint and make the code achieve a good score!
+#   also: maybe setup a GitHub Actions pylint workflow?
+#   https://github.com/Filip-Tomasko/endsong-parser-python/actions/new
 
 
 class GatherData:
