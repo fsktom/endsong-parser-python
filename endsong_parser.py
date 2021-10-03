@@ -3,6 +3,7 @@
 import datetime as dt
 import json
 from math import floor, log10
+from enum import Enum, auto
 
 import matplotlib.pylab as pylab
 import matplotlib.pyplot as plt
@@ -15,6 +16,11 @@ import numpy as np
 #   also: maybe setup a GitHub Actions pylint workflow?
 #   https://github.com/Filip-Tomasko/endsong-parser-python/actions/new
 
+class Aspect(Enum):
+    TRACK = auto()
+    ALBUM = auto()
+    ARTIST = auto()
+    # use this somehow https://youtu.be/LrtnLEkOwFE
 
 class GatherData:
     """Used for parsing data from endsong.json to a Python list of dictionaries
@@ -870,6 +876,7 @@ def init(paths, uri=False):
 if __name__ == "__main__":
 
     paths = "/home/filip/Other/SpotifyData/2021-07/endsong_0.json"
+    pathsWin = "D:\\SPOTIFY DATA\\my_spotify_data 2021-07\\endsong_0.json"
 
     # paths = [
     #     "/home/filip/Other/SpotifyData/2021-07/endsong_0.json",
