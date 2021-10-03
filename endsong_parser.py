@@ -765,7 +765,7 @@ class DisplayData:
         """creates a file that contains all titles, artists and albums"""
         self.data.list_with_names()
 
-    def topOrder(order, maxNum) -> str:
+    def topOrder(self, order, maxNum) -> str:
         """
         Formats position of aspect for better display.
         If it were to display e.g. 100 tracks,
