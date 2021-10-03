@@ -1,5 +1,11 @@
 # Python Endsong Parser
 
+## for me
+
+use `make clean && make html` after `cd docs` to build docs
+
+## Description
+
 Parser for Spotify `endsong.json` files made with Python
 
 Required libaries:

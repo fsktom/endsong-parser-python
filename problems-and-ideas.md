@@ -39,3 +39,7 @@ Well, this script is not perfect. Here I will write about the problems that may 
     - [see this guide for writing docstrings from Sphinx docs](https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html)
   - [This](https://stackoverflow.com/a/10065932/6694963) or [that](https://stackoverflow.com/a/9195565/6694963)
 - for `print_top()` and others: add argument for date range
+- add a analysis function - e.g. year in review
+  - comparison with previous years etc.
+  - a lot of stuff can be done here
+  - data analysis (Derek Banas?)
