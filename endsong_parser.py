@@ -10,6 +10,8 @@ import numpy as np
 
 # docstrings: https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html
 
+# TODO: add examples to docstrings??
+
 
 class GatherData:
     """Used for parsing data from endsong.json to a Python list of dictionaries
@@ -297,6 +299,9 @@ class GatherData:
 
     def list_with_names(self) -> None:
         """Creates a .txt file that contains all track names, artists and albums"""
+
+        # so that you can look up how a particular song/arist is written
+
         titles, artists, albums = [], [], []
         for e in self.__info:
             titles += [e["title"]]
@@ -403,10 +408,9 @@ class DisplayData:
         secondaryNum=5,
         percent=False,
     ) -> None:
-        """
-        Prints top list of aspect
+        """Prints top list of aspect
 
-        :param str aspect: Can be "title", "artist" or "album"
+        :param str aspect: Can be ``"title"``, ``"artist"`` or ``"album"``
         :param bool title: For aspects "artist" and "album": prints top
             secondaryNum songs of that aspect
         :param bool artist: For aspects "title" and "album": prints the
@@ -416,11 +420,13 @@ class DisplayData:
         :param bool streams: Whether to show amount of total streams of chosen aspect
         :param int primaryNum: Show top primaryNum of chosen aspect
         :param int secondaryNum: see title and album parameters
-        :param bool percent: Whether to show proportion of total streams of chosen aspect
+        :param bool percent: whether to show proportion of total
+            streams to amount of streams of chosen aspect,
+            defaults to False
         """
+
         def topOrder(order, maxNum) -> str:
-            """
-            Formats position of aspect for better display.
+            """Formats position of aspect for better display.
             If it were to display e.g. 100 tracks,
             this function would change ``"#1"`` to ``"  #1"`` to match up with ``"#100"``
 
@@ -469,12 +475,7 @@ class DisplayData:
                 if streams:
                     outputString += " | Streams: " + str(dataArray[i]["streams"])
                 if percent:
-                    outputString += (
-                        " | "
-                        + str(round(dataArray[i]["streams"] / self.sum_all * 100, 5))
-                        + "%"
-                        + " of all"
-                    )
+                    outputString += self.percent(dataArray[i]["streams"])
                 print(outputString)
         elif dataArray[0][0] == "artist":
             print("--- TOP ARTISTS ---")
@@ -486,12 +487,7 @@ class DisplayData:
                 if streams:
                     outputString += " | Streams: " + str(dataArray[i]["streams"])
                 if percent:
-                    outputString += (
-                        " |"
-                        + str(round(dataArray[i]["streams"] / self.sum_all * 100, 5))
-                        + "%"
-                        + " of all"
-                    )
+                    outputString += self.percent(dataArray[i]["streams"])
                 if title:
                     outputString += (
                         "\n\tMost Played Songs: \n\t\t1. " + dataArray[i]["title"][0][0]
@@ -554,12 +550,7 @@ class DisplayData:
                 if streams:
                     outputString += " | Streams: " + str(dataArray[i]["streams"])
                 if percent:
-                    outputString += (
-                        " | "
-                        + str(round(dataArray[i]["streams"] / self.sum_all * 100, 5))
-                        + "%"
-                        + " of all"
-                    )
+                    outputString += self.percent(dataArray[i]["streams"])
                 if title:
                     outputString += (
                         "\n\tMost Played Songs: \n\t\t1. " + dataArray[i]["title"][0][0]
@@ -619,99 +610,131 @@ class DisplayData:
         artist=True,
         album=False,
         streams=True,
-        index=5,
-        percentages=False,
+        num=5,
+        percent=False,
     ) -> None:
-        """prints one name of aspect (eg. aspect="artist",name="Eminem" prints everything of Eminem) \n
-        aspects are "title", "artist" and "album" \n
-        name of the aspect \n
-        whether to show titles, artists, albums and number of streams \n
-        top n tracks \n
-        whether to show percentages
+        """Prints a summary of an aspect
+
+        For ``aspect="title"`` by default prints the name of the song,
+        the artist and amount of listens
+
+        With ``aspect="artist"``, it can print top ``num`` tracks if
+        ``title=True`` and albums if ``album=True``
+
+        With ``aspect="album"``, it can print top ``num`` tracks if
+        ``title=True``
+
+        :param aspect: Can be ``"title"``, ``"artist"`` or ``"album"``
+        :type aspect: str
+        :param name: Name of aspect, e.g. name of song or artist
+        :type name: str
+        :param title: whether to show top ``num`` tracks, defaults to True
+        :type title: bool, optional
+        :param artist: if aspect is ``"title"`` or ``"album"``:
+            whether to show artist, defaults to True
+        :type artist: bool, optional
+        :param album: for ``aspect="title"``: whether to show track's album;
+            for ``aspect="artist"``: whether to show top ``num`` albums,
+            defaults to False
+        :type album: bool, optional
+        :param streams: whether to show amount of streams for aspect
+            and top lists, defaults to True
+        :type streams: bool, optional
+        :param num: depth of top list, defaults to 5
+        :type num: int, optional
+        :param percent: whether to show proportion of total streams to
+            amount of streams of chosen aspect, defaults to False
+        :type percent: bool, optional
         """
+
+        # ERROR with num=1
+
         dataArray = self.data.get_streams_of(aspect)
         match = False
         for e in dataArray[1:]:
             if e[dataArray[0][0]] == name:
                 if dataArray[0][0] == "title":
-                    string = name
+                    outputString = ""
                     if artist:
-                        string += " from " + e["artist"]
+                        outputString += e["artist"] + " - "
+                    outputString += name
                     if album:
-                        string += " from " + e["album"]
+                        outputString += " | " + e["album"]
                     if streams:
-                        string += ", Streams: " + str(e["streams"])
-                    if percentages:
-                        string += (
-                            " ("
-                            + str(round(e["streams"] / self.sum_all * 100, 5))
-                            + "% of all)"
-                        )
-                    print(string)
+                        outputString += " | Streams: " + str(e["streams"])
+                    if percent:
+                        outputString += self.percent(e["streams"])
+                    print(outputString)
                 elif dataArray[0][0] == "artist":
-                    string = name
+                    outputString = name
                     if streams:
-                        string += ", Streams: " + str(e["streams"])
-                    if percentages:
-                        string += (
-                            " ("
-                            + str(round(e["streams"] / self.sum_all * 100, 5))
-                            + "% of all)"
-                        )
+                        outputString += " | Streams: " + str(e["streams"])
+                    if percent:
+                        outputString += self.percent(e["streams"])
                     if title:
-                        string += ", Most Played Songs: {1. " + e["title"][0][0]
+                        outputString += (
+                            "\n\tMost Played Songs: \n\t\t1. " + e["title"][0][0]
+                        )
                         if album:
-                            string += " from " + e["title"][0][2]
+                            outputString += " | " + e["title"][0][2]
                         if streams:
-                            string += ", Streams: " + str(e["title"][0][1])
+                            outputString += " | Streams: " + str(e["title"][0][1])
                         try:
-                            for j in range(1, index):
-                                string += "; " + str(j + 1) + ". " + e["title"][j][0]
+                            for j in range(1, num):
+                                outputString += (
+                                    "\n\t\t" + str(j + 1) + ". " + e["title"][j][0]
+                                )
                                 if album:
-                                    string += " from " + e["title"][j][2]
+                                    outputString += " | " + e["title"][j][2]
                                 if streams:
-                                    string += ", Streams: " + str(e["title"][j][1])
+                                    outputString += " | Streams: " + str(
+                                        e["title"][j][1]
+                                    )
                         except IndexError:
                             pass
-                        string += "}"
                     if album:
-                        string += ", Most Played Albums: {1. " + e["album"][0][0]
-                        if streams:
-                            string += ", Streams: " + str(e["album"][0][1])
-                        try:
-                            for j in range(1, index):
-                                string += "; " + str(j + 1) + ". " + e["album"][j][0]
-                                if streams:
-                                    string += ", Streams: " + str(e["album"][j][1])
-                        except IndexError:
-                            pass
-                        string += "}"
-                    print(string)
-                elif dataArray[0][0] == "album":
-                    string = name
-                    if artist:
-                        string += " from " + e["artist"]
-                    if streams:
-                        string += ", Streams: " + str(e["streams"])
-                    if percentages:
-                        string += (
-                            " ("
-                            + str(round(e["streams"] / self.sum_all * 100, 5))
-                            + "% of all)"
+                        outputString += (
+                            "\n\tMost Played Albums: \n\t\t1. " + e["album"][0][0]
                         )
-                    if title:
-                        string += ", Most Played Songs: {1. " + e["title"][0][0]
                         if streams:
-                            string += ", Streams: " + str(e["title"][0][1])
+                            outputString += " | Streams: " + str(e["album"][0][1])
                         try:
-                            for j in range(1, index):
-                                string += "; " + str(j + 1) + ". " + e["title"][j][0]
+                            for j in range(1, num):
+                                outputString += (
+                                    "\n\t\t" + str(j + 1) + ". " + e["album"][j][0]
+                                )
                                 if streams:
-                                    string += ", Streams: " + str(e["title"][j][1])
+                                    outputString += " | Streams: " + str(
+                                        e["album"][j][1]
+                                    )
                         except IndexError:
                             pass
-                        string += "}"
-                    print(string)
+                    print(outputString)
+                elif dataArray[0][0] == "album":
+                    outputString = ""
+                    if artist:
+                        outputString += e["artist"] + " - "
+                    outputString += name
+                    if streams:
+                        outputString += " | Streams: " + str(e["streams"])
+                    if percent:
+                        outputString += self.percent(e["streams"])
+                    if title:
+                        outputString += (
+                            "\n\tMost Played Songs: \n\t\t1. " + e["title"][0][0]
+                        )
+                    if streams:
+                        outputString += " | Streams: " + str(e["title"][0][1])
+                        try:
+                            for j in range(1, num):
+                                outputString += (
+                                    "\n\t\t" + str(j + 1) + ". " + e["title"][j][0]
+                                )
+                                if streams:
+                                    outputString += " | Streams: " + str(e["title"][j][1])
+                        except IndexError:
+                            pass
+                    print(outputString)
                 match = True
         if not match:
             print(name + " not found")
@@ -794,6 +817,20 @@ class DisplayData:
     def list_with_names(self) -> None:
         """creates a file that contains all titles, artists and albums"""
         self.data.list_with_names()
+
+    def percent(self, streams) -> str:
+        # maybe make this method private?
+        """Internal method used for calculating percentage of total
+        streams of an aspect and formatting it nicely
+
+        Rounds percentage to 5 decimal places
+
+        :param streams: amount of streams
+        :type streams: int
+        :return: a string in ``" | <percentage>% of all"`` format
+        :rtype: str
+        """
+        return " | " + str(round(streams / self.sum_all * 100, 5)) + "%" + " of all"
 
 
 def init(paths, uri=False):
