@@ -25,7 +25,8 @@ class Aspect(Enum):
 class GatherData:
     """Used for parsing data from endsong.json to a Python list of dictionaries
 
-    **WARNING**: ``uri=False`` *MAY* mix stuff up if artists have the same name
+    **WARNING**: it's highly likely to mix stuff up if artists
+        have the same name -> to be tested!
 
     :param path: absolute path or list of absolute paths to ``endsong.json`` files
     :type path: str or list
