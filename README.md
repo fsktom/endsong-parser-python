@@ -5,6 +5,9 @@
 - use `make clean && make html` after `cd docs` to build docs
 - Windows requires `\\` instead of `/` for paths
 - in interactive shell, autocomplete works for functions, Aspect.T etc.
+- conda environemnt `endsong` with
+  - Python 3.9.7
+  - requirements.txt
 
 ## Description
 

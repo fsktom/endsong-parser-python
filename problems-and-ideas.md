@@ -48,3 +48,6 @@ Well, this script is not perfect. Here I will write about the problems that may 
 - make a dummy/example endsong.json for testing purposes only (with personal data such as username, public IP etc. removed)
 - make enum Field that is child of Aspect that has Field.STREAMS
   - maybe @dataclass decorator and make the resulting dict sortable by num of streams?? using sorted(dict)
+- [add yaml file for conda env](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#create-env-file-manually)
+  - channels: `conda-forge`
+  - https://youtu.be/1VVCd0eSkYc
