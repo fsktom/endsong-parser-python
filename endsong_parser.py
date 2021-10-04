@@ -15,6 +15,9 @@ import numpy as np
 # TODO: run pylint and make the code achieve a good score!
 #   also: maybe setup a GitHub Actions pylint workflow?
 #   https://github.com/Filip-Tomasko/endsong-parser-python/actions/new
+# TODO: enums
+#   https://youtu.be/zmWf_cHyo8s
+#   https://youtu.be/gPPDXgCMZ0k
 
 
 class Aspect(Enum):
@@ -25,10 +28,15 @@ class Aspect(Enum):
     artist: Aspect.ARTIST
     """
 
-    TRACK = auto()
-    ALBUM = auto()
-    ARTIST = auto()
+    TRACK = "title"
+    ALBUM = "album"
+    ARTIST = "artist"
     # use this somehow https://youtu.be/LrtnLEkOwFE
+
+class Field(Enum):
+    ID = "id"
+    STREAMS = "streams"
+    TS = "timestamps"
 
 
 class GatherData:
@@ -119,6 +127,7 @@ class GatherData:
 
     # https://stackoverflow.com/a/38727786/6694963
     # args static typing with default value
+    # PEP 3107
     def get_streams_of(self, aspect: Aspect = Aspect.TRACK) -> list:
         """Returns all of a specfic aspect from dataset ordered by
         number of streams.
@@ -133,22 +142,13 @@ class GatherData:
         :rtype: list[dict]
         """
 
-        # change it so that it doesn't require aspectS
-        aspectS = ""
-        if aspect == Aspect.ARTIST:
-            aspectS = "artist"
-        elif aspect == Aspect.ALBUM:
-            aspectS = "album"
-        elif aspect == Aspect.TRACK:
-            aspectS = "title"
-
-        streams_of = [[aspectS, self.__leftbond, self.__rightbond]]
+        streams_of = [[aspect.value, self.__leftbond, self.__rightbond]]
 
         for e in self.__info:
             i = 1
             match = False
             while i < len(streams_of) and not match:
-                if e[aspectS] == streams_of[i][aspectS]:
+                if e[aspect.value] == streams_of[i][aspect.value]:
                     for j in range(len(e["timestamps"])):
                         if self.__in_period_of_time(e["timestamps"][j]):
                             streams_of[i]["streams"] += 1

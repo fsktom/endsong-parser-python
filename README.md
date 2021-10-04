@@ -2,7 +2,9 @@
 
 ## for me
 
-use `make clean && make html` after `cd docs` to build docs
+- use `make clean && make html` after `cd docs` to build docs
+- Windows requires `\\` instead of `/` for paths
+- in interactive shell, autocomplete works for functions, Aspect.T etc.
 
 ## Description
 

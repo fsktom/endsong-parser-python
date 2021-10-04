@@ -46,3 +46,5 @@ Well, this script is not perfect. Here I will write about the problems that may 
 - `ms_played` key in endsong.json
   - do we count it as a listen if it is less than half of track length? what is Spotify's threshhold for putting an entry in nedsong.json?
 - make a dummy/example endsong.json for testing purposes only (with personal data such as username, public IP etc. removed)
+- make enum Field that is child of Aspect that has Field.STREAMS
+  - maybe @dataclass decorator and make the resulting dict sortable by num of streams?? using sorted(dict)
