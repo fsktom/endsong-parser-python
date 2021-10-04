@@ -16,11 +16,20 @@ import numpy as np
 #   also: maybe setup a GitHub Actions pylint workflow?
 #   https://github.com/Filip-Tomasko/endsong-parser-python/actions/new
 
+
 class Aspect(Enum):
+    """Possible aspects used in arguments of methods
+
+    track: Aspect.TRACK
+    album: Aspect.ALBUM
+    artist: Aspect.ARTIST
+    """
+
     TRACK = auto()
     ALBUM = auto()
     ARTIST = auto()
     # use this somehow https://youtu.be/LrtnLEkOwFE
+
 
 class GatherData:
     """Used for parsing data from endsong.json to a Python list of dictionaries
@@ -108,40 +117,52 @@ class GatherData:
         for i in range(len(self.__info)):
             self.__info[i]["streams"] = len(self.__info[i]["timestamps"])
 
-    def get_streams_of(self, aspect="title") -> list:
+    # https://stackoverflow.com/a/38727786/6694963
+    # args static typing with default value
+    def get_streams_of(self, aspect: Aspect = Aspect.TRACK) -> list:
         """Returns all of a specfic aspect from dataset ordered by
         number of streams.
 
         Use "set_bonds" to set a specific date range
 
-        :param aspect: desired aspect, can be "title", "album"
-            or "artist", defaults to "title"
-        :type aspect: str, optional
+        :param aspect: desired aspect, can be Aspect.TRACK, Aspect.ALBUM
+            and Aspect.ARTIST
+        :type aspect: Aspect, optional
         :return: array of dictionaries, where each dictionary is a single
             song with attributes "title", "artist", "album" and "streams"
         :rtype: list[dict]
         """
 
-        streams_of = [[aspect, self.__leftbond, self.__rightbond]]
+        # change it so that it doesn't require aspectS
+        aspectS = ""
+        if aspect == Aspect.ARTIST:
+            aspectS = "artist"
+        elif aspect == Aspect.ALBUM:
+            aspectS = "album"
+        elif aspect == Aspect.TRACK:
+            aspectS = "title"
+
+        streams_of = [[aspectS, self.__leftbond, self.__rightbond]]
+
         for e in self.__info:
             i = 1
             match = False
             while i < len(streams_of) and not match:
-                if e[aspect] == streams_of[i][aspect]:
+                if e[aspectS] == streams_of[i][aspectS]:
                     for j in range(len(e["timestamps"])):
                         if self.__in_period_of_time(e["timestamps"][j]):
                             streams_of[i]["streams"] += 1
-                    if aspect == "artist":
+                    if aspect == Aspect.ARTIST:
                         streams_of[i]["title"] += [
                             [e["title"], e["streams"], e["album"]]
                         ]
-                    elif aspect == "album":
+                    elif aspect == Aspect.ALBUM:
                         streams_of[i]["title"] += [[e["title"], e["streams"]]]
                     match = True
                 i += 1
 
             if not match:
-                if aspect == "title":
+                if aspect == Aspect.TRACK:
                     streams_of += [
                         {
                             "title": e["title"],
@@ -150,11 +171,11 @@ class GatherData:
                             "streams": 0,
                         }
                     ]
-                elif aspect == "artist":
+                elif aspect == Aspect.ARTIST:
                     streams_of += [
                         {"artist": e["artist"], "streams": 0, "title": [], "album": []}
                     ]
-                elif aspect == "album":
+                elif aspect == Aspect.ALBUM:
                     streams_of += [
                         {
                             "album": e["album"],
@@ -166,14 +187,14 @@ class GatherData:
                 for j in range(len(e["timestamps"])):
                     if self.__in_period_of_time(e["timestamps"][j]):
                         streams_of[-1]["streams"] += 1
-                if aspect == "artist":
+                if aspect == Aspect.ARTIST:
                     streams_of[-1]["title"] += [[e["title"], e["streams"], e["album"]]]
-                elif aspect == "album":
+                elif aspect == Aspect.ALBUM:
                     streams_of[-1]["title"] += [[e["title"], e["streams"]]]
                 if streams_of[-1]["streams"] == 0:
                     del streams_of[-1]
 
-        if aspect == "artist" or aspect == "album":
+        if aspect == Aspect.ARTIST or aspect == Aspect.ALBUM:
             for e in streams_of[1:]:
                 for _ in range(len(e["title"]) - 1):
                     for i in range(len(e["title"]) - 1):
@@ -182,7 +203,7 @@ class GatherData:
                                 e["title"][i + 1],
                                 e["title"][i],
                             )
-        if aspect == "artist":
+        if aspect == Aspect.ARTIST:
             for e in streams_of[1:]:
                 albums = []
                 for f in e["title"]:
@@ -409,7 +430,7 @@ class DisplayData:
 
     def print_top(
         self,
-        aspect="title",
+        aspect: Aspect = Aspect.TRACK,
         title=False,
         artist=True,
         album=False,
@@ -741,7 +762,9 @@ class DisplayData:
                                     "\n\t\t" + str(j + 1) + ". " + e["title"][j][0]
                                 )
                                 if streams:
-                                    outputString += " | Streams: " + str(e["title"][j][1])
+                                    outputString += " | Streams: " + str(
+                                        e["title"][j][1]
+                                    )
                         except IndexError:
                             pass
                     print(outputString)
