@@ -1,6 +1,9 @@
 # my stuff
 mine/
+temp/
 .vscode/
+## created by GatherData.list_with_names()
+names.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

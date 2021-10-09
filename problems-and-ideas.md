@@ -46,5 +46,12 @@ Well, this script is not perfect. Here I will write about the problems that may 
 - `ms_played` key in endsong.json
   - do we count it as a listen if it is less than half of track length? what is Spotify's threshhold for putting an entry in nedsong.json?
 - make a dummy/example endsong.json for testing purposes only (with personal data such as username, public IP etc. removed)
+- make enum Field that is child of Aspect that has Field.STREAMS
+  - maybe @dataclass decorator and make the resulting dict sortable by num of streams?? using sorted(dict)
+- [x] [add yaml file for conda env](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#create-env-file-manually)
+  - channels: `conda-forge`
+  - https://youtu.be/1VVCd0eSkYc
+- update to Python 3.10 to use the new switch-case equivalent (for aspect == Aspect.TITLE and stuff)
+- [static typing](https://towardsdatascience.com/how-to-make-python-statically-typed-the-essential-guide-e087cf4fa400)
 - pylint and mypy - https://instaloader.github.io/contributing.html
 - also, for Sphinx see e.g. Instaloader class in this file https://github.com/instaloader/instaloader/blob/master/instaloader/instaloader.py

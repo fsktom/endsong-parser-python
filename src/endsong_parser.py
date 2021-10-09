@@ -1,12 +1,17 @@
 #!/usr/bin/python3
-
 import datetime as dt
 import json
-from math import floor, log10
-from enum import Enum, auto
+from enum import auto
+from enum import Enum
+from math import floor
+from math import log10
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Union
 
-import matplotlib.pylab as pylab
-import matplotlib.pyplot as plt
+import matplotlib.pylab as pylab  # type: ignore
+import matplotlib.pyplot as plt  # type: ignore
 import numpy as np
 
 # docstrings: https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html
@@ -15,18 +20,37 @@ import numpy as np
 # TODO: run pylint and make the code achieve a good score!
 #   also: maybe setup a GitHub Actions pylint workflow?
 #   https://github.com/Filip-Tomasko/endsong-parser-python/actions/new
+# TODO: enums
+#   https://youtu.be/zmWf_cHyo8s
+#   https://youtu.be/gPPDXgCMZ0k
+# TODO: matplotlib type hints, stub files etc. for mypy
+#   https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-type-hints-for-third-party-library
+
 
 class Aspect(Enum):
-    TRACK = auto()
-    ALBUM = auto()
-    ARTIST = auto()
+    """Possible aspects used in arguments of methods
+
+    track: Aspect.TRACK
+    album: Aspect.ALBUM
+    artist: Aspect.ARTIST
+    """
+
+    TRACK = "title"
+    ALBUM = "album"
+    ARTIST = "artist"
     # use this somehow https://youtu.be/LrtnLEkOwFE
+
+
+class Field(Enum):
+    ID = "id"
+    STREAMS = "streams"
+    TS = "timestamps"
+
 
 class GatherData:
     """Used for parsing data from endsong.json to a Python list of dictionaries
 
-    **WARNING**: it's highly likely to mix stuff up if artists
-        have the same name -> to be tested!
+    **WARNING**: it's highly likely to mix stuff up if artists have the same name -> to be tested!
 
     :param path: absolute path or list of absolute paths to ``endsong.json`` files
     :type path: str or list
@@ -38,10 +62,14 @@ class GatherData:
 
     __slots__ = ["__info", "__leftbond", "__rightbond"]
 
+    # __info: List[Dict[str, Union[str, int, List[str]]]]
+    # TODO: correct type annotation for __info
+    __info: Any
+
     def __init__(self, path, uri=True) -> None:
         self.__info = []
-        self.__leftbond = 0
-        self.__rightbond = 2147483647
+        self.__leftbond: float = 0.0
+        self.__rightbond: float = 2147483647.0
         self.__collect_data(path, uri)
 
     def __collect_data(self, path, uri) -> None:
@@ -108,40 +136,50 @@ class GatherData:
         for i in range(len(self.__info)):
             self.__info[i]["streams"] = len(self.__info[i]["timestamps"])
 
-    def get_streams_of(self, aspect="title") -> list:
+    # https://stackoverflow.com/a/38727786/6694963
+    # args static typing with default value
+    # PEP 3107
+    def get_streams_of(self, aspect: Aspect = Aspect.TRACK) -> list:
         """Returns all of a specfic aspect from dataset ordered by
         number of streams.
 
         Use "set_bonds" to set a specific date range
 
-        :param aspect: desired aspect, can be "title", "album"
-            or "artist", defaults to "title"
-        :type aspect: str, optional
+        :param aspect: desired aspect, can be Aspect.TRACK, Aspect.ALBUM
+            and Aspect.ARTIST
+        :type aspect: Aspect, optional
         :return: array of dictionaries, where each dictionary is a single
             song with attributes "title", "artist", "album" and "streams"
         :rtype: list[dict]
         """
 
-        streams_of = [[aspect, self.__leftbond, self.__rightbond]]
+        # https://stackoverflow.com/a/62577297/6694963 for static typing
+        # https://stackoverflow.com/a/37087556/6694963
+        # streams_of: List[Union[Dict[Any], List[Any]]] = [
+        #     [aspect.value, self.__leftbond, self.__rightbond]
+        # ]
+        # TODO: correct type annotation.. !!!!!!!!!!!1
+        streams_of: Any = [[aspect.value, self.__leftbond, self.__rightbond]]
+
         for e in self.__info:
             i = 1
             match = False
             while i < len(streams_of) and not match:
-                if e[aspect] == streams_of[i][aspect]:
+                if e[aspect.value] == streams_of[i][aspect.value]:
                     for j in range(len(e["timestamps"])):
                         if self.__in_period_of_time(e["timestamps"][j]):
                             streams_of[i]["streams"] += 1
-                    if aspect == "artist":
+                    if aspect == Aspect.ARTIST:
                         streams_of[i]["title"] += [
                             [e["title"], e["streams"], e["album"]]
                         ]
-                    elif aspect == "album":
+                    elif aspect == Aspect.ALBUM:
                         streams_of[i]["title"] += [[e["title"], e["streams"]]]
                     match = True
                 i += 1
 
             if not match:
-                if aspect == "title":
+                if aspect == Aspect.TRACK:
                     streams_of += [
                         {
                             "title": e["title"],
@@ -150,11 +188,11 @@ class GatherData:
                             "streams": 0,
                         }
                     ]
-                elif aspect == "artist":
+                elif aspect == Aspect.ARTIST:
                     streams_of += [
                         {"artist": e["artist"], "streams": 0, "title": [], "album": []}
                     ]
-                elif aspect == "album":
+                elif aspect == Aspect.ALBUM:
                     streams_of += [
                         {
                             "album": e["album"],
@@ -166,14 +204,14 @@ class GatherData:
                 for j in range(len(e["timestamps"])):
                     if self.__in_period_of_time(e["timestamps"][j]):
                         streams_of[-1]["streams"] += 1
-                if aspect == "artist":
+                if aspect == Aspect.ARTIST:
                     streams_of[-1]["title"] += [[e["title"], e["streams"], e["album"]]]
-                elif aspect == "album":
+                elif aspect == Aspect.ALBUM:
                     streams_of[-1]["title"] += [[e["title"], e["streams"]]]
                 if streams_of[-1]["streams"] == 0:
                     del streams_of[-1]
 
-        if aspect == "artist" or aspect == "album":
+        if aspect == Aspect.ARTIST or aspect == Aspect.ALBUM:
             for e in streams_of[1:]:
                 for _ in range(len(e["title"]) - 1):
                     for i in range(len(e["title"]) - 1):
@@ -182,9 +220,10 @@ class GatherData:
                                 e["title"][i + 1],
                                 e["title"][i],
                             )
-        if aspect == "artist":
+        if aspect == Aspect.ARTIST:
             for e in streams_of[1:]:
-                albums = []
+                # TODO: make the type annotation better
+                albums: List[Any] = []
                 for f in e["title"]:
                     i = 0
                     match = False
@@ -193,8 +232,11 @@ class GatherData:
                             albums[i][1] += f[1]
                             match = True
                         i += 1
+                        print("While", albums)
                     if not match:
                         albums += [[f[2], f[1]]]
+                        print("if", albums)
+                print("end", albums)
                 e["album"] = albums
             for e in streams_of[1:]:
                 for _ in range(len(e["album"]) - 1):
@@ -272,8 +314,8 @@ class GatherData:
         """Restores default bonda for date range
         (Unix time min and max)
         """
-        self.__leftbond = 0
-        self.__rightbond = 2147483647
+        self.__leftbond = 0.0
+        self.__rightbond = 2147483647.0
 
     def get_first_ever(self) -> tuple:
         """Returns first ever streamed song listed in endsong.json
@@ -283,7 +325,7 @@ class GatherData:
             Note: "timestamps" value is a list of dates
         :rtype: tuple[dict, float]
         """
-        earliest = 2147483647
+        earliest = 2147483647.0
         for i in range(len(self.__info)):
             for j in range(len(self.__info[i]["timestamps"])):
                 if self.__convert_to_unix(self.__info[i]["timestamps"][j]) < earliest:
@@ -299,7 +341,7 @@ class GatherData:
             Note: "timestamps" value is a list of dates
         :rtype: tuple[dict, float]
         """
-        latest = 0
+        latest = 0.0
         for i in range(len(self.__info)):
             for j in range(len(self.__info[i]["timestamps"])):
                 if self.__convert_to_unix(self.__info[i]["timestamps"][j]) > latest:
@@ -312,6 +354,9 @@ class GatherData:
 
         # so that you can look up how a particular song/arist is written
 
+        titles: List[str]
+        artists: List[str]
+        albums: List[str]
         titles, artists, albums = [], [], []
         for e in self.__info:
             titles += [e["title"]]
@@ -409,7 +454,7 @@ class DisplayData:
 
     def print_top(
         self,
-        aspect="title",
+        aspect: Aspect = Aspect.TRACK,
         title=False,
         artist=True,
         album=False,
@@ -741,7 +786,9 @@ class DisplayData:
                                     "\n\t\t" + str(j + 1) + ". " + e["title"][j][0]
                                 )
                                 if streams:
-                                    outputString += " | Streams: " + str(e["title"][j][1])
+                                    outputString += " | Streams: " + str(
+                                        e["title"][j][1]
+                                    )
                         except IndexError:
                             pass
                     print(outputString)
@@ -749,7 +796,8 @@ class DisplayData:
         if not match:
             print(name + " not found")
 
-    def __prep_graphs(self, aspect, name, mode) -> None:
+    def __prep_graphs(self, aspect, name, mode) -> Any:
+        # TODO: fix type annotation, for return as well
         fig, ax = plt.subplots()
         ts = self.data.prepare_graph(aspect, name)
 
@@ -843,26 +891,6 @@ class DisplayData:
         return " | " + str(round(streams / self.sum_all * 100, 5)) + "%" + " of all"
 
 
-def init(paths, uri=False):
-    """The function used for creating an object used for further
-    visualization of data
-
-    Creates a :class:`GatherData` object with ``paths`` argument and
-    passes it to create a :class:`DisplayData` object. Returns the
-    created object to be used for further data visualization by
-    using its methods.
-
-    :param paths: Either a single absolute path to endsong.json
-        or list of paths to multiple endsong_x.json files
-    :type paths: str or list
-    :param uri: see :class:`GatherData`
-    :type uri: bool, optional
-    :return: a DisplayData object used to visualize data
-    :rtype: DisplayData
-    """
-    return DisplayData(GatherData(paths))
-
-
 ## methods are:
 ## print_top prints most played songs, artists or albums,
 ## print_aspect prints one name of aspect (eg. aspect="artist",name="Eminem" prints everything of Eminem),
@@ -873,20 +901,3 @@ def init(paths, uri=False):
 ## set_bonds sets a timeframe,
 ## restore_bonds restores the default timeframe,
 ## list_with_names creates a list with all names
-
-if __name__ == "__main__":
-
-    paths = "/home/filip/Other/SpotifyData/2021-07/endsong_0.json"
-    pathsWin = "D:\\SPOTIFY DATA\\my_spotify_data 2021-07\\endsong_0.json"
-
-    # paths = [
-    #     "/home/filip/Other/SpotifyData/2021-07/endsong_0.json",
-    #     "/home/filip/Other/SpotifyData/2021-07/endsong_1.json",
-    #     "/home/filip/Other/SpotifyData/2021-07/endsong_2.json",
-    #     "/home/filip/Other/SpotifyData/2021-07/endsong_3.json",
-    #     "/home/filip/Other/SpotifyData/2021-07/endsong_4.json",
-    #     "/home/filip/Other/SpotifyData/2021-07/endsong_5.json",
-    #     "/home/filip/Other/SpotifyData/2021-07/endsong_6.json",
-    # ]
-
-    d = init(paths)
