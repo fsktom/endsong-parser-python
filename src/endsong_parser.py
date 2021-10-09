@@ -5,9 +5,13 @@ from enum import auto
 from enum import Enum
 from math import floor
 from math import log10
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Union
 
-import matplotlib.pylab as pylab
-import matplotlib.pyplot as plt
+import matplotlib.pylab as pylab  # type: ignore
+import matplotlib.pyplot as plt  # type: ignore
 import numpy as np
 
 # docstrings: https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html
@@ -19,6 +23,8 @@ import numpy as np
 # TODO: enums
 #   https://youtu.be/zmWf_cHyo8s
 #   https://youtu.be/gPPDXgCMZ0k
+# TODO: matplotlib type hints, stub files etc. for mypy
+#   https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-type-hints-for-third-party-library
 
 
 class Aspect(Enum):
@@ -56,10 +62,14 @@ class GatherData:
 
     __slots__ = ["__info", "__leftbond", "__rightbond"]
 
+    # __info: List[Dict[str, Union[str, int, List[str]]]]
+    # TODO: correct type annotation for __info
+    __info: Any
+
     def __init__(self, path, uri=True) -> None:
         self.__info = []
-        self.__leftbond = 0
-        self.__rightbond = 2147483647
+        self.__leftbond: float = 0.0
+        self.__rightbond: float = 2147483647.0
         self.__collect_data(path, uri)
 
     def __collect_data(self, path, uri) -> None:
@@ -122,6 +132,7 @@ class GatherData:
                                     "timestamps": [f["ts"]],
                                 }
                             ]
+        print(self.__info[0])
 
         for i in range(len(self.__info)):
             self.__info[i]["streams"] = len(self.__info[i]["timestamps"])
@@ -143,7 +154,13 @@ class GatherData:
         :rtype: list[dict]
         """
 
-        streams_of = [[aspect.value, self.__leftbond, self.__rightbond]]
+        # https://stackoverflow.com/a/62577297/6694963 for static typing
+        # https://stackoverflow.com/a/37087556/6694963
+        # streams_of: List[Union[Dict[Any], List[Any]]] = [
+        #     [aspect.value, self.__leftbond, self.__rightbond]
+        # ]
+        # TODO: correct type annotation.. !!!!!!!!!!!1
+        streams_of: Any = [[aspect.value, self.__leftbond, self.__rightbond]]
 
         for e in self.__info:
             i = 1
@@ -206,7 +223,8 @@ class GatherData:
                             )
         if aspect == Aspect.ARTIST:
             for e in streams_of[1:]:
-                albums = []
+                # TODO: make the type annotation better
+                albums: List[Any] = []
                 for f in e["title"]:
                     i = 0
                     match = False
@@ -215,8 +233,11 @@ class GatherData:
                             albums[i][1] += f[1]
                             match = True
                         i += 1
+                        print("While", albums)
                     if not match:
                         albums += [[f[2], f[1]]]
+                        print("if", albums)
+                print("end", albums)
                 e["album"] = albums
             for e in streams_of[1:]:
                 for _ in range(len(e["album"]) - 1):
@@ -294,8 +315,8 @@ class GatherData:
         """Restores default bonda for date range
         (Unix time min and max)
         """
-        self.__leftbond = 0
-        self.__rightbond = 2147483647
+        self.__leftbond = 0.0
+        self.__rightbond = 2147483647.0
 
     def get_first_ever(self) -> tuple:
         """Returns first ever streamed song listed in endsong.json
@@ -305,7 +326,7 @@ class GatherData:
             Note: "timestamps" value is a list of dates
         :rtype: tuple[dict, float]
         """
-        earliest = 2147483647
+        earliest = 2147483647.0
         for i in range(len(self.__info)):
             for j in range(len(self.__info[i]["timestamps"])):
                 if self.__convert_to_unix(self.__info[i]["timestamps"][j]) < earliest:
@@ -321,7 +342,7 @@ class GatherData:
             Note: "timestamps" value is a list of dates
         :rtype: tuple[dict, float]
         """
-        latest = 0
+        latest = 0.0
         for i in range(len(self.__info)):
             for j in range(len(self.__info[i]["timestamps"])):
                 if self.__convert_to_unix(self.__info[i]["timestamps"][j]) > latest:
@@ -334,6 +355,9 @@ class GatherData:
 
         # so that you can look up how a particular song/arist is written
 
+        titles: List[str]
+        artists: List[str]
+        albums: List[str]
         titles, artists, albums = [], [], []
         for e in self.__info:
             titles += [e["title"]]
@@ -773,7 +797,8 @@ class DisplayData:
         if not match:
             print(name + " not found")
 
-    def __prep_graphs(self, aspect, name, mode) -> None:
+    def __prep_graphs(self, aspect, name, mode) -> Any:
+        # TODO: fix type annotation, for return as well
         fig, ax = plt.subplots()
         ts = self.data.prepare_graph(aspect, name)
 
