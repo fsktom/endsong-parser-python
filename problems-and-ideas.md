@@ -51,3 +51,4 @@ Well, this script is not perfect. Here I will write about the problems that may 
 - [x] [add yaml file for conda env](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#create-env-file-manually)
   - channels: `conda-forge`
   - https://youtu.be/1VVCd0eSkYc
+- update to Python 3.10 to use the new switch-case equivalent (for aspect == Aspect.TITLE and stuff)
