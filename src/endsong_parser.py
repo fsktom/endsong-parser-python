@@ -1,9 +1,10 @@
 #!/usr/bin/python3
-
 import datetime as dt
 import json
-from math import floor, log10
-from enum import Enum, auto
+from enum import auto
+from enum import Enum
+from math import floor
+from math import log10
 
 import matplotlib.pylab as pylab
 import matplotlib.pyplot as plt
@@ -68,7 +69,7 @@ class GatherData:
             lpath = [path]
 
         for e in lpath:
-            with open(e, "r", encoding="utf-8") as jsonFile:
+            with open(e, encoding="utf-8") as jsonFile:
                 file = json.load(jsonFile)
                 jsonFile.close()
 
@@ -487,7 +488,7 @@ class DisplayData:
 
         dataArray = self.data.get_streams_of(aspect)
         print(
-            "Between {0} and {1}:".format(
+            "Between {} and {}:".format(
                 dt.datetime.utcfromtimestamp(dataArray[0][1]) + dt.timedelta(hours=+1),
                 dt.datetime.utcfromtimestamp(dataArray[0][2]) + dt.timedelta(hours=+1),
             )
@@ -612,7 +613,7 @@ class DisplayData:
         """
         # https://queirozf.com/entries/python-number-formatting-examples#use-commas-as-thousands-separator
         # e.g. 1000000 -> 1,000,000
-        print("You have listened to {:,} songs!".format(self.sum_all))
+        print(f"You have listened to {self.sum_all:,} songs!")
 
     def print_first_last(self, fl=True) -> None:
         """first song true, last song false"""
