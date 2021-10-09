@@ -53,3 +53,5 @@ Well, this script is not perfect. Here I will write about the problems that may 
   - https://youtu.be/1VVCd0eSkYc
 - update to Python 3.10 to use the new switch-case equivalent (for aspect == Aspect.TITLE and stuff)
 - [static typing](https://towardsdatascience.com/how-to-make-python-statically-typed-the-essential-guide-e087cf4fa400)
+- pylint and mypy - https://instaloader.github.io/contributing.html
+- also, for Sphinx see e.g. Instaloader class in this file https://github.com/instaloader/instaloader/blob/master/instaloader/instaloader.py
