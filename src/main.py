@@ -1,8 +1,11 @@
+from typing import List
+from typing import Union
+
 from endsong_parser import DisplayData
 from endsong_parser import GatherData
 
 
-def init(paths, uri=False):
+def init(paths: Union[str, List[str]], uri: bool = True) -> DisplayData:
     """The function used for creating an object used for further
     visualization of data
 
@@ -13,9 +16,11 @@ def init(paths, uri=False):
 
     :param paths: Either a single absolute path to endsong.json
         or list of paths to multiple endsong_x.json files
-    :type paths: str or list
-    :param uri: see :class:`GatherData`
-    :type uri: bool, optional
+    :type paths: str or list[str]
+    :param uri: if *True*: songs are identified by Spotify ID;
+        if *False*: by name and artist
+        (album and single versions are identified as one)
+    :type uri: bool, optional, defaults to True
     :return: a DisplayData object used to visualize data
     :rtype: DisplayData
     """
