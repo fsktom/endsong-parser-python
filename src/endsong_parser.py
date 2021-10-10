@@ -79,9 +79,9 @@ class GatherData:
             lpath = [path]
 
         for e in lpath:
-            with open(e, "r", encoding="utf-8") as jsonFile:
-                file = json.load(jsonFile)
-                jsonFile.close()
+            with open(e, "r", encoding="utf-8") as json_file:
+                file = json.load(json_file)
+                json_file.close()
 
             for f in file:
                 if uri:
