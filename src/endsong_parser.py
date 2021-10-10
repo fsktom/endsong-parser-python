@@ -235,11 +235,8 @@ class GatherData:
                             albums[i][1] += f[1]
                             match = True
                         i += 1
-                        print("While", albums)
                     if not match:
                         albums += [[f[2], f[1]]]
-                        print("if", albums)
-                print("end", albums)
                 e["album"] = albums
             for e in streams_of[1:]:
                 for _ in range(len(e["album"]) - 1):
