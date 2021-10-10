@@ -599,115 +599,115 @@ class DisplayData:
             print("--- TOP TRACKS ---")
             for i in range(1, primaryNum + 1):
                 # for a nicer, more uniform list
-                outputString = topOrder(i, primaryNum)
+                output_string = topOrder(i, primaryNum)
 
                 if artist:
-                    outputString += dataArray[i]["artist"] + " - "
-                outputString += dataArray[i]["title"]
+                    output_string += dataArray[i]["artist"] + " - "
+                output_string += dataArray[i]["title"]
                 if album and title:
-                    outputString += " | " + dataArray[i]["album"]
+                    output_string += " | " + dataArray[i]["album"]
                 if streams:
-                    outputString += " | Streams: " + str(dataArray[i]["streams"])
+                    output_string += " | Streams: " + str(dataArray[i]["streams"])
                 if percent:
-                    outputString += self.percent(dataArray[i]["streams"])
-                print(outputString)
+                    output_string += self.percent(dataArray[i]["streams"])
+                print(output_string)
         elif dataArray[0][0] == "artist":
             print("--- TOP ARTISTS ---")
             for i in range(1, primaryNum + 1):
                 # for a nicer, more uniform list
-                outputString = topOrder(i, primaryNum)
+                output_string = topOrder(i, primaryNum)
 
-                outputString += dataArray[i]["artist"]
+                output_string += dataArray[i]["artist"]
                 if streams:
-                    outputString += " | Streams: " + str(dataArray[i]["streams"])
+                    output_string += " | Streams: " + str(dataArray[i]["streams"])
                 if percent:
-                    outputString += self.percent(dataArray[i]["streams"])
+                    output_string += self.percent(dataArray[i]["streams"])
                 if title:
-                    outputString += (
+                    output_string += (
                         "\n\tMost Played Songs: \n\t\t1. " + dataArray[i]["title"][0][0]
                     )
                     if album:
-                        outputString += " | " + dataArray[i]["title"][0][2]
+                        output_string += " | " + dataArray[i]["title"][0][2]
                     if streams:
-                        outputString += " | Streams: " + str(
+                        output_string += " | Streams: " + str(
                             dataArray[i]["title"][0][1]
                         )
                     try:
                         for j in range(1, secondaryNum):
-                            outputString += (
+                            output_string += (
                                 "\n\t\t"
                                 + str(j + 1)
                                 + ". "
                                 + dataArray[i]["title"][j][0]
                             )
                             if album:
-                                outputString += " | " + dataArray[i]["title"][j][2]
+                                output_string += " | " + dataArray[i]["title"][j][2]
                             if streams:
-                                outputString += " | Streams: " + str(
+                                output_string += " | Streams: " + str(
                                     dataArray[i]["title"][j][1]
                                 )
                     except IndexError:
                         pass
                 if album:
-                    outputString += (
+                    output_string += (
                         "\n\tMost Played Albums: \n\t\t1. "
                         + dataArray[i]["album"][0][0]
                     )
                     if streams:
-                        outputString += " | Streams: " + str(
+                        output_string += " | Streams: " + str(
                             dataArray[i]["album"][0][1]
                         )
                     try:
                         for j in range(1, secondaryNum):
-                            outputString += (
+                            output_string += (
                                 "\n\t\t"
                                 + str(j + 1)
                                 + ". "
                                 + dataArray[i]["album"][j][0]
                             )
                             if streams:
-                                outputString += " | Streams: " + str(
+                                output_string += " | Streams: " + str(
                                     dataArray[i]["album"][j][1]
                                 )
                     except IndexError:
                         pass
-                print(outputString)
+                print(output_string)
         elif dataArray[0][0] == "album":
             print("--- TOP ALBUMS ---")
             for i in range(1, primaryNum + 1):
                 # for a nicer, more uniform list
-                outputString = topOrder(i, primaryNum)
+                output_string = topOrder(i, primaryNum)
 
                 if artist:
-                    outputString += dataArray[i]["artist"] + " - "
-                outputString += dataArray[i]["album"]
+                    output_string += dataArray[i]["artist"] + " - "
+                output_string += dataArray[i]["album"]
                 if streams:
-                    outputString += " | Streams: " + str(dataArray[i]["streams"])
+                    output_string += " | Streams: " + str(dataArray[i]["streams"])
                 if percent:
-                    outputString += self.percent(dataArray[i]["streams"])
+                    output_string += self.percent(dataArray[i]["streams"])
                 if title:
-                    outputString += (
+                    output_string += (
                         "\n\tMost Played Songs: \n\t\t1. " + dataArray[i]["title"][0][0]
                     )
                     if streams:
-                        outputString += " | Streams: " + str(
+                        output_string += " | Streams: " + str(
                             dataArray[i]["title"][0][1]
                         )
                     try:
                         for j in range(1, secondaryNum):
-                            outputString += (
+                            output_string += (
                                 "\n\t\t"
                                 + str(j + 1)
                                 + ". "
                                 + dataArray[i]["title"][j][0]
                             )
                             if streams:
-                                outputString += " | Streams: " + str(
+                                output_string += " | Streams: " + str(
                                     dataArray[i]["title"][j][1]
                                 )
                     except:
                         pass
-                print(outputString)
+                print(output_string)
 
     def print_sum(self) -> None:
         """
@@ -788,89 +788,89 @@ class DisplayData:
         for e in dataArray[1:]:
             if e[dataArray[0][0]] == name:
                 if dataArray[0][0] == "title":
-                    outputString = ""
+                    output_string = ""
                     if artist:
-                        outputString += e["artist"] + " - "
-                    outputString += name
+                        output_string += e["artist"] + " - "
+                    output_string += name
                     if album:
-                        outputString += " | " + e["album"]
+                        output_string += " | " + e["album"]
                     if streams:
-                        outputString += " | Streams: " + str(e["streams"])
+                        output_string += " | Streams: " + str(e["streams"])
                     if percent:
-                        outputString += self.percent(e["streams"])
-                    print(outputString)
+                        output_string += self.percent(e["streams"])
+                    print(output_string)
                 elif dataArray[0][0] == "artist":
-                    outputString = name
+                    output_string = name
                     if streams:
-                        outputString += " | Streams: " + str(e["streams"])
+                        output_string += " | Streams: " + str(e["streams"])
                     if percent:
-                        outputString += self.percent(e["streams"])
+                        output_string += self.percent(e["streams"])
                     if title:
-                        outputString += (
+                        output_string += (
                             "\n\tMost Played Songs: \n\t\t1. " + e["title"][0][0]
                         )
                         if album:
-                            outputString += " | " + e["title"][0][2]
+                            output_string += " | " + e["title"][0][2]
                         if streams:
-                            outputString += " | Streams: " + str(e["title"][0][1])
+                            output_string += " | Streams: " + str(e["title"][0][1])
                         try:
                             for j in range(1, num):
-                                outputString += (
+                                output_string += (
                                     "\n\t\t" + str(j + 1) + ". " + e["title"][j][0]
                                 )
                                 if album:
-                                    outputString += " | " + e["title"][j][2]
+                                    output_string += " | " + e["title"][j][2]
                                 if streams:
-                                    outputString += " | Streams: " + str(
+                                    output_string += " | Streams: " + str(
                                         e["title"][j][1]
                                     )
                         except IndexError:
                             pass
                     if album:
-                        outputString += (
+                        output_string += (
                             "\n\tMost Played Albums: \n\t\t1. " + e["album"][0][0]
                         )
                         if streams:
-                            outputString += " | Streams: " + str(e["album"][0][1])
+                            output_string += " | Streams: " + str(e["album"][0][1])
                         try:
                             for j in range(1, num):
-                                outputString += (
+                                output_string += (
                                     "\n\t\t" + str(j + 1) + ". " + e["album"][j][0]
                                 )
                                 if streams:
-                                    outputString += " | Streams: " + str(
+                                    output_string += " | Streams: " + str(
                                         e["album"][j][1]
                                     )
                         except IndexError:
                             pass
-                    print(outputString)
+                    print(output_string)
                 elif dataArray[0][0] == "album":
-                    outputString = ""
+                    output_string = ""
                     if artist:
-                        outputString += e["artist"] + " - "
-                    outputString += name
+                        output_string += e["artist"] + " - "
+                    output_string += name
                     if streams:
-                        outputString += " | Streams: " + str(e["streams"])
+                        output_string += " | Streams: " + str(e["streams"])
                     if percent:
-                        outputString += self.percent(e["streams"])
+                        output_string += self.percent(e["streams"])
                     if title:
-                        outputString += (
+                        output_string += (
                             "\n\tMost Played Songs: \n\t\t1. " + e["title"][0][0]
                         )
                     if streams:
-                        outputString += " | Streams: " + str(e["title"][0][1])
+                        output_string += " | Streams: " + str(e["title"][0][1])
                         try:
                             for j in range(1, num):
-                                outputString += (
+                                output_string += (
                                     "\n\t\t" + str(j + 1) + ". " + e["title"][j][0]
                                 )
                                 if streams:
-                                    outputString += " | Streams: " + str(
+                                    output_string += " | Streams: " + str(
                                         e["title"][j][1]
                                     )
                         except IndexError:
                             pass
-                    print(outputString)
+                    print(output_string)
                 match = True
         if not match:
             print(name + " not found")
