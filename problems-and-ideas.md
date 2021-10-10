@@ -6,6 +6,8 @@ Well, this script is not perfect. Here I will write about the problems that may 
 
 - if two artists have the same name
   - possible solution: using the Spotify API
+- duplicate `endsong.json` files
+  - checking name of file won't be enough
 
 ## Suggestions / Ideas
 
@@ -55,3 +57,4 @@ Well, this script is not perfect. Here I will write about the problems that may 
 - [static typing](https://towardsdatascience.com/how-to-make-python-statically-typed-the-essential-guide-e087cf4fa400)
 - pylint and mypy - [Instaloader contributing page](https://instaloader.github.io/contributing.html)
 - also, for Sphinx see e.g. Instaloader class in this file [Instaloader main file](https://github.com/instaloader/instaloader/blob/master/instaloader/instaloader.py)
+- comparison of `endsong.json` files from two different people (two different sets)
