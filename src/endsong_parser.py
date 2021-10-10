@@ -385,45 +385,6 @@ class GatherData:
         file.close()
         print("saved as names.txt")
 
-    def prepare_graph(self, aspect, name) -> list:
-        """prepares data to put in a graph \n
-        aspects are "title", "artist" and "album" \n
-        name of the aspect
-        """
-        times = []
-        string = []
-        for e in self.info:
-            if e[aspect] == name:
-                for f in e["timestamps"]:
-                    if self.in_period_of_time(f):
-                        times += [f]
-                string += [e["artist"]]
-                if aspect == "album" or aspect == "title":
-                    string += [e["album"]]
-                if aspect == "title":
-                    string += [e["title"]]
-        for _ in range(len(times) - 1):
-            for i in range(len(times) - 1):
-                if times[i] > times[i + 1]:
-                    times[i], times[i + 1] = times[i + 1], times[i]
-        for i in range(len(times)):
-            times[i] = dt.datetime.utcfromtimestamp(
-                self.convert_to_unix(times[i])
-            ) + dt.timedelta(hours=+1)
-        return [
-            [
-                dt.datetime.utcfromtimestamp(self.get_first_ever()[1])
-                + dt.timedelta(hours=+1)
-            ]
-            + times
-            + [
-                dt.datetime.utcfromtimestamp(self.get_last_of_data()[1])
-                + dt.timedelta(hours=+1)
-            ],
-            aspect,
-            string,
-        ]
-
     def all_timestamps(self) -> list:
         """Returns list of all timestamps
 
@@ -435,6 +396,112 @@ class GatherData:
             for f in e["timestamps"]:
                 timestamps += [self.convert_to_unix(f)]
         return timestamps
+
+
+class Graph:
+    def __init__(self, gatheredData: GatherData) -> None:
+        self.data = gatheredData
+
+    def prepare_graph(self, aspect: Aspect, name: str) -> list:
+        """prepares data to put in a graph \n
+        aspects are "title", "artist" and "album" \n
+        name of the aspect
+        """
+        times = []
+        string = []
+        for e in self.data.info:
+            if e[aspect.value] == name:
+                for f in e["timestamps"]:
+                    if self.data.in_period_of_time(f):
+                        times += [f]
+                string += [e["artist"]]
+                if aspect.value == "album" or aspect.value == "title":
+                    string += [e["album"]]
+                if aspect.value == "title":
+                    string += [e["title"]]
+        for _ in range(len(times) - 1):
+            for i in range(len(times) - 1):
+                if times[i] > times[i + 1]:
+                    times[i], times[i + 1] = times[i + 1], times[i]
+        for i in range(len(times)):
+            times[i] = dt.datetime.utcfromtimestamp(
+                self.data.convert_to_unix(times[i])
+            ) + dt.timedelta(hours=+1)
+        return [
+            [
+                dt.datetime.utcfromtimestamp(self.data.get_first_ever()[1])
+                + dt.timedelta(hours=+1)
+            ]
+            + times
+            + [
+                dt.datetime.utcfromtimestamp(self.data.get_last_of_data()[1])
+                + dt.timedelta(hours=+1)
+            ],
+            aspect.value,
+            string,
+        ]
+
+    def prep_graphs(self, aspect: Aspect, name: str, mode: str) -> Any:
+        # TODO: fix type annotation, for return as well
+        fig, ax = plt.subplots()
+        ts = self.prepare_graph(aspect, name)
+
+        pylab.gcf().canvas.manager.set_window_title(mode + " streams over time")
+        if ts[1] == "title":
+            title = ts[2][1] + " - " + ts[2][2] + " (" + ts[2][0] + ")"
+        elif ts[1] == "artist":
+            title = ts[2][0]
+        elif ts[1] == "album":
+            title = ts[2][0] + " - " + ts[2][1]
+        fig.autofmt_xdate()
+        ax.set_title(title)
+        ax.set_ylabel(mode + " streams")
+        ax.set_xlim((ts[0][0], ts[0][-1]))
+        plt.grid()
+
+        return ax, ts[0]
+
+    def graph_abs(self, aspect: Aspect, name: str) -> None:
+        """aspects are "title", "artist" and "album" \n
+        name of the aspect\n
+        graph absolute listened over time
+        """
+        ax, x = self.prep_graphs(aspect, name, "absolute")
+
+        y = list(np.linspace(0, len(x) - 2, len(x) - 1)) + [len(x) - 2]
+        ax.plot_date(x, y, "k")
+
+        ax.set_ylim(0)
+        plt.show()
+
+    def graph_rel(self, aspect, name) -> None:
+        """aspects are "title", "artist" and "album" \n
+        name of the aspect \n
+        graph relative listened over time
+        """
+        ax, x = self.prep_graphs(aspect, name, "relative")
+
+        all_dy = []
+        for i in range(len(x)):
+            dy = 0
+            # GatherData.all_timestamps() oder DisplayData.all_timestamps?
+            # ursprünglich GatherData
+            for e in self.data.all_timestamps():
+                if e < x[i].timestamp():
+                    dy += 1
+            all_dy += [dy]
+
+        y = list(np.linspace(0, len(x) - 2, len(x) - 1)) + [len(x) - 2]
+        for i in range(len(all_dy)):
+            if all_dy[i] == 0:
+                y[i] = 0
+            else:
+                y[i] = y[i] / all_dy[i] * 100
+
+        ax.plot_date(x, y, "k")
+
+        ax.set_ylim(0)
+        plt.show()
 
 
 class DisplayData:
@@ -794,66 +861,6 @@ class DisplayData:
                 match = True
         if not match:
             print(name + " not found")
-
-    def prep_graphs(self, aspect, name, mode) -> Any:
-        # TODO: fix type annotation, for return as well
-        fig, ax = plt.subplots()
-        ts = self.data.prepare_graph(aspect, name)
-
-        pylab.gcf().canvas.manager.set_window_title(mode + " streams over time")
-        if ts[1] == "title":
-            title = ts[2][1] + " - " + ts[2][2] + " (" + ts[2][0] + ")"
-        elif ts[1] == "artist":
-            title = ts[2][0]
-        elif ts[1] == "album":
-            title = ts[2][0] + " - " + ts[2][1]
-        fig.autofmt_xdate()
-        ax.set_title(title)
-        ax.set_ylabel(mode + " streams")
-        ax.set_xlim((ts[0][0], ts[0][-1]))
-        plt.grid()
-
-        return ax, ts[0]
-
-    def graph_abs(self, aspect, name) -> None:
-        """aspects are "title", "artist" and "album" \n
-        name of the aspect\n
-        graph absolute listened over time
-        """
-        ax, x = self.prep_graphs(aspect, name, "absolute")
-
-        y = list(np.linspace(0, len(x) - 2, len(x) - 1)) + [len(x) - 2]
-        ax.plot_date(x, y, "k")
-
-        ax.set_ylim(0)
-        plt.show()
-
-    def graph_rel(self, aspect, name) -> None:
-        """aspects are "title", "artist" and "album" \n
-        name of the aspect \n
-        graph relative listened over time
-        """
-        ax, x = self.prep_graphs(aspect, name, "relative")
-
-        all_dy = []
-        for i in range(len(x)):
-            dy = 0
-            for e in self.all_timestamps:
-                if e < x[i].timestamp():
-                    dy += 1
-            all_dy += [dy]
-
-        y = list(np.linspace(0, len(x) - 2, len(x) - 1)) + [len(x) - 2]
-        for i in range(len(all_dy)):
-            if all_dy[i] == 0:
-                y[i] = 0
-            else:
-                y[i] = y[i] / all_dy[i] * 100
-
-        ax.plot_date(x, y, "k")
-
-        ax.set_ylim(0)
-        plt.show()
 
     def set_bonds(self, earliest, latest) -> None:
         """Set the desired time frame

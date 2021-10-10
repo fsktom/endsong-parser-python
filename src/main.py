@@ -1,11 +1,14 @@
 from typing import List
+from typing import Tuple
 from typing import Union
 
+from endsong_parser import Aspect
 from endsong_parser import DisplayData
 from endsong_parser import GatherData
+from endsong_parser import Graph
 
 
-def init(paths: Union[str, List[str]], uri: bool = True) -> DisplayData:
+def init(paths: Union[str, List[str]], uri: bool = True) -> Tuple[DisplayData, Graph]:
     """The function used for creating an object used for further
     visualization of data
 
@@ -24,7 +27,8 @@ def init(paths: Union[str, List[str]], uri: bool = True) -> DisplayData:
     :return: a DisplayData object used to visualize data
     :rtype: DisplayData
     """
-    return DisplayData(GatherData(paths))
+    data = GatherData(paths, uri)
+    return DisplayData(data), Graph(data)
 
 
 if __name__ == "__main__":
@@ -42,4 +46,4 @@ if __name__ == "__main__":
     #     "/home/filip/Other/SpotifyData/2021-07/endsong_6.json",
     # ]
 
-    d = init(paths)
+    d, g = init(paths)
