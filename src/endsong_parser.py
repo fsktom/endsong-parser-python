@@ -66,14 +66,16 @@ class GatherData:
     # TODO: correct type annotation for __info
     info: Any
 
-    def __init__(self, path, uri=True) -> None:
+    def __init__(self, path: Union[str, List[str]], uri: bool = True) -> None:
         self.info = []
         self.leftbond: float = 0.0
         self.rightbond: float = 2147483647.0
         self.collect_data(path, uri)
 
-    def collect_data(self, path, uri) -> None:
-        if isinstance(path, (list, tuple)):
+    def collect_data(self, path: Union[str, List[str]], uri: bool) -> None:
+        # TODO: type checking of path without isintance, maybe using @property? setters?
+        # https://www.youtube.com/watch?v=wf-BqAjZb8M
+        if isinstance(path, list):
             lpath = path
         else:
             lpath = [path]
