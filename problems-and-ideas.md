@@ -26,10 +26,10 @@ Well, this script is not perfect. Here I will write about the problems that may 
   - e.g. comparison of all-time listens of one artist vs the other
   - or one artist vs a specific song of that artist (to see what proportion that song has graphically)
   - the larger scale would be taken
-- input of paths via a `+paths.txt` or similar (see [https://github.com/instaloader/instaloader] for comparison) where each line is a separate path
+- input of paths via a `+paths.txt` or similar (see [Instaloader](https://github.com/instaloader/instaloader) for comparison) where each line is a separate path
 - add a `requirements.txt` file [gallery-dl example](https://github.com/mikf/gallery-dl/blob/master/requirements.txt)
-- add a `--help` argument (see [https://github.com/mikf/gallery-dl] or [https://github.com/instaloader/instaloader])
-- [https://github.com/tartley/colorama] for colored text in terminal
+- add a `--help` argument (see [gallery-dl](https://github.com/mikf/gallery-dl) or [instaloader](https://github.com/instaloader/instaloader))
+- [colorama](https://github.com/tartley/colorama) for colored text in terminal
   - maybe to separate track, artist, album, no.?
 - DOCSTRINGS
   - [compare Spotipy](https://github.com/plamere/spotipy) - [their readthedocs](https://spotipy.readthedocs.io/)
@@ -50,8 +50,8 @@ Well, this script is not perfect. Here I will write about the problems that may 
   - maybe @dataclass decorator and make the resulting dict sortable by num of streams?? using sorted(dict)
 - [x] [add yaml file for conda env](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#create-env-file-manually)
   - channels: `conda-forge`
-  - [https://youtu.be/1VVCd0eSkYc]
+  - [YT video about conda basics](https://youtu.be/1VVCd0eSkYc)
 - update to Python 3.10 to use the new switch-case equivalent (for aspect == Aspect.TITLE and stuff)
 - [static typing](https://towardsdatascience.com/how-to-make-python-statically-typed-the-essential-guide-e087cf4fa400)
-- pylint and mypy - [https://instaloader.github.io/contributing.html]
-- also, for Sphinx see e.g. Instaloader class in this file [https://github.com/instaloader/instaloader/blob/master/instaloader/instaloader.py]
+- pylint and mypy - [Instaloader contributing page](https://instaloader.github.io/contributing.html)
+- also, for Sphinx see e.g. Instaloader class in this file [Instaloader main file](https://github.com/instaloader/instaloader/blob/master/instaloader/instaloader.py)
