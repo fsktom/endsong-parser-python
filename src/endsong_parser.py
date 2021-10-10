@@ -60,19 +60,19 @@ class GatherData:
     :type uri: bool, optional
     """
 
-    __slots__ = ["__info", "__leftbond", "__rightbond"]
+    # __slots__ = ["__info", "__leftbond", "__rightbond"]
 
     # __info: List[Dict[str, Union[str, int, List[str]]]]
     # TODO: correct type annotation for __info
-    __info: Any
+    info: Any
 
     def __init__(self, path, uri=True) -> None:
-        self.__info = []
-        self.__leftbond: float = 0.0
-        self.__rightbond: float = 2147483647.0
-        self.__collect_data(path, uri)
+        self.info = []
+        self.leftbond: float = 0.0
+        self.rightbond: float = 2147483647.0
+        self.collect_data(path, uri)
 
-    def __collect_data(self, path, uri) -> None:
+    def collect_data(self, path, uri) -> None:
         if isinstance(path, (list, tuple)):
             lpath = path
         else:
@@ -88,13 +88,13 @@ class GatherData:
                     if f["spotify_track_uri"]:
                         i = 0
                         match = False
-                        while i < len(self.__info) and not match:
-                            if self.__info[i]["id"] == f["spotify_track_uri"]:
-                                self.__info[i]["timestamps"] += [f["ts"]]
+                        while i < len(self.info) and not match:
+                            if self.info[i]["id"] == f["spotify_track_uri"]:
+                                self.info[i]["timestamps"] += [f["ts"]]
                                 match = True
                             i += 1
                         if not match:
-                            self.__info += [
+                            self.info += [
                                 {
                                     "id": f["spotify_track_uri"],
                                     "title": f["master_metadata_track_name"],
@@ -111,18 +111,17 @@ class GatherData:
                     ):
                         i = 0
                         match = False
-                        while i < len(self.__info) and not match:
+                        while i < len(self.info) and not match:
                             if (
-                                self.__info[i]["title"]
-                                == f["master_metadata_track_name"]
-                                and self.__info[i]["artist"]
+                                self.info[i]["title"] == f["master_metadata_track_name"]
+                                and self.info[i]["artist"]
                                 == f["master_metadata_album_artist_name"]
                             ):
-                                self.__info[i]["timestamps"] += [f["ts"]]
+                                self.info[i]["timestamps"] += [f["ts"]]
                                 match = True
                             i += 1
                         if not match:
-                            self.__info += [
+                            self.info += [
                                 {
                                     "id": f["spotify_track_uri"],
                                     "title": f["master_metadata_track_name"],
@@ -133,8 +132,8 @@ class GatherData:
                                 }
                             ]
 
-        for i in range(len(self.__info)):
-            self.__info[i]["streams"] = len(self.__info[i]["timestamps"])
+        for i in range(len(self.info)):
+            self.info[i]["streams"] = len(self.info[i]["timestamps"])
 
     # https://stackoverflow.com/a/38727786/6694963
     # args static typing with default value
@@ -159,15 +158,15 @@ class GatherData:
         #     [aspect.value, self.__leftbond, self.__rightbond]
         # ]
         # TODO: correct type annotation.. !!!!!!!!!!!1
-        streams_of: Any = [[aspect.value, self.__leftbond, self.__rightbond]]
+        streams_of: Any = [[aspect.value, self.leftbond, self.rightbond]]
 
-        for e in self.__info:
+        for e in self.info:
             i = 1
             match = False
             while i < len(streams_of) and not match:
                 if e[aspect.value] == streams_of[i][aspect.value]:
                     for j in range(len(e["timestamps"])):
-                        if self.__in_period_of_time(e["timestamps"][j]):
+                        if self.in_period_of_time(e["timestamps"][j]):
                             streams_of[i]["streams"] += 1
                     if aspect == Aspect.ARTIST:
                         streams_of[i]["title"] += [
@@ -202,7 +201,7 @@ class GatherData:
                         }
                     ]
                 for j in range(len(e["timestamps"])):
-                    if self.__in_period_of_time(e["timestamps"][j]):
+                    if self.in_period_of_time(e["timestamps"][j]):
                         streams_of[-1]["streams"] += 1
                 if aspect == Aspect.ARTIST:
                     streams_of[-1]["title"] += [[e["title"], e["streams"], e["album"]]]
@@ -247,9 +246,9 @@ class GatherData:
                                 e["album"][i],
                             )
         # returns list of dicts
-        return self.__sort_by_streams(streams_of)
+        return self.sort_by_streams(streams_of)
 
-    def __sort_by_streams(self, items) -> list:
+    def sort_by_streams(self, items) -> list:
         for _ in range(1, len(items) - 1):
             for i in range(1, len(items) - 1):
                 if items[i]["streams"] < items[i + 1]["streams"]:
@@ -263,13 +262,13 @@ class GatherData:
         :rtype: int
         """
         sum_listened = 0
-        for e in self.__info:
+        for e in self.info:
             for i in range(len(e["timestamps"])):
-                if self.__in_period_of_time(e["timestamps"][i]):
+                if self.in_period_of_time(e["timestamps"][i]):
                     sum_listened += 1
         return sum_listened
 
-    def __convert_to_unix(self, ts, offset=0) -> float:
+    def convert_to_unix(self, ts, offset=0) -> float:
         try:
             return (
                 dt.datetime(
@@ -288,10 +287,10 @@ class GatherData:
                 int(ts[:4]), int(ts[5:7]), int(ts[8:10]), tzinfo=dt.timezone.utc
             ).timestamp()
 
-    def __in_period_of_time(self, ts) -> bool:
+    def in_period_of_time(self, ts) -> bool:
         if (
-            self.__convert_to_unix(ts) >= self.__leftbond
-            and self.__convert_to_unix(ts) <= self.__rightbond
+            self.convert_to_unix(ts) >= self.leftbond
+            and self.convert_to_unix(ts) <= self.rightbond
         ):
             return True
         else:
@@ -307,15 +306,15 @@ class GatherData:
         :param latest: date in "yyyy.mm.dd-hh.mm.ss" format
         :type latest: str
         """
-        self.__leftbond = self.__convert_to_unix(earliest, -1)
-        self.__rightbond = self.__convert_to_unix(latest, -1)
+        self.leftbond = self.convert_to_unix(earliest, -1)
+        self.rightbond = self.convert_to_unix(latest, -1)
 
     def restore_bonds(self) -> None:
         """Restores default bonda for date range
         (Unix time min and max)
         """
-        self.__leftbond = 0.0
-        self.__rightbond = 2147483647.0
+        self.leftbond = 0.0
+        self.rightbond = 2147483647.0
 
     def get_first_ever(self) -> tuple:
         """Returns first ever streamed song listed in endsong.json
@@ -326,11 +325,11 @@ class GatherData:
         :rtype: tuple[dict, float]
         """
         earliest = 2147483647.0
-        for i in range(len(self.__info)):
-            for j in range(len(self.__info[i]["timestamps"])):
-                if self.__convert_to_unix(self.__info[i]["timestamps"][j]) < earliest:
-                    earliest = self.__convert_to_unix(self.__info[i]["timestamps"][j])
-                    ret = self.__info[i]
+        for i in range(len(self.info)):
+            for j in range(len(self.info[i]["timestamps"])):
+                if self.convert_to_unix(self.info[i]["timestamps"][j]) < earliest:
+                    earliest = self.convert_to_unix(self.info[i]["timestamps"][j])
+                    ret = self.info[i]
         return (ret, earliest)
 
     def get_last_of_data(self) -> tuple:
@@ -342,11 +341,11 @@ class GatherData:
         :rtype: tuple[dict, float]
         """
         latest = 0.0
-        for i in range(len(self.__info)):
-            for j in range(len(self.__info[i]["timestamps"])):
-                if self.__convert_to_unix(self.__info[i]["timestamps"][j]) > latest:
-                    latest = self.__convert_to_unix(self.__info[i]["timestamps"][j])
-                    ret = self.__info[i]
+        for i in range(len(self.info)):
+            for j in range(len(self.info[i]["timestamps"])):
+                if self.convert_to_unix(self.info[i]["timestamps"][j]) > latest:
+                    latest = self.convert_to_unix(self.info[i]["timestamps"][j])
+                    ret = self.info[i]
         return (ret, latest)
 
     def list_with_names(self) -> None:
@@ -358,7 +357,7 @@ class GatherData:
         artists: List[str]
         albums: List[str]
         titles, artists, albums = [], [], []
-        for e in self.__info:
+        for e in self.info:
             titles += [e["title"]]
             ai = False
             for f in artists:
@@ -393,10 +392,10 @@ class GatherData:
         """
         times = []
         string = []
-        for e in self.__info:
+        for e in self.info:
             if e[aspect] == name:
                 for f in e["timestamps"]:
-                    if self.__in_period_of_time(f):
+                    if self.in_period_of_time(f):
                         times += [f]
                 string += [e["artist"]]
                 if aspect == "album" or aspect == "title":
@@ -409,7 +408,7 @@ class GatherData:
                     times[i], times[i + 1] = times[i + 1], times[i]
         for i in range(len(times)):
             times[i] = dt.datetime.utcfromtimestamp(
-                self.__convert_to_unix(times[i])
+                self.convert_to_unix(times[i])
             ) + dt.timedelta(hours=+1)
         return [
             [
@@ -432,9 +431,9 @@ class GatherData:
         :rtype: list
         """
         timestamps = []
-        for e in self.__info:
+        for e in self.info:
             for f in e["timestamps"]:
-                timestamps += [self.__convert_to_unix(f)]
+                timestamps += [self.convert_to_unix(f)]
         return timestamps
 
 
@@ -796,7 +795,7 @@ class DisplayData:
         if not match:
             print(name + " not found")
 
-    def __prep_graphs(self, aspect, name, mode) -> Any:
+    def prep_graphs(self, aspect, name, mode) -> Any:
         # TODO: fix type annotation, for return as well
         fig, ax = plt.subplots()
         ts = self.data.prepare_graph(aspect, name)
@@ -821,7 +820,7 @@ class DisplayData:
         name of the aspect\n
         graph absolute listened over time
         """
-        ax, x = self.__prep_graphs(aspect, name, "absolute")
+        ax, x = self.prep_graphs(aspect, name, "absolute")
 
         y = list(np.linspace(0, len(x) - 2, len(x) - 1)) + [len(x) - 2]
         ax.plot_date(x, y, "k")
@@ -834,7 +833,7 @@ class DisplayData:
         name of the aspect \n
         graph relative listened over time
         """
-        ax, x = self.__prep_graphs(aspect, name, "relative")
+        ax, x = self.prep_graphs(aspect, name, "relative")
 
         all_dy = []
         for i in range(len(x)):
