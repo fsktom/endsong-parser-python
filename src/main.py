@@ -1,3 +1,4 @@
+from timeit import timeit
 from typing import List
 from typing import Tuple
 from typing import Union
@@ -29,6 +30,7 @@ def init(paths: Union[str, List[str]], uri: bool = True) -> Tuple[DisplayData, G
     """
     data = GatherData(paths, uri)
     return DisplayData(data), Graph(data)
+    # d, g = DisplayData(data), Graph(data)
 
 
 if __name__ == "__main__":
@@ -46,4 +48,6 @@ if __name__ == "__main__":
     #     "/home/filip/Other/SpotifyData/2021-07/endsong_6.json",
     # ]
 
+    # print(timeit(init, number=5))
     d, g = init(paths)
+    print(timeit(d.print_top, number=5))
