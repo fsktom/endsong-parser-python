@@ -50,4 +50,4 @@ if __name__ == "__main__":
 
     # print(timeit(init, number=5))
     d, g = init(paths)
-    print(timeit(d.print_top, number=5))
+    # print(timeit(d.print_top, number=5))

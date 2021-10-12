@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 import datetime as dt
 import json
-import time
 from enum import auto
 from enum import Enum
 from math import floor
@@ -14,6 +13,8 @@ from typing import Union
 import matplotlib.pylab as pylab  # type: ignore
 import matplotlib.pyplot as plt  # type: ignore
 import numpy as np
+
+import time_utils
 
 # docstrings: https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html
 
@@ -169,7 +170,7 @@ class GatherData:
             while i < len(streams_of) and not match:
                 if e[aspect.value] == streams_of[i][aspect.value]:
                     for j in range(len(e["timestamps"])):
-                        if time.in_period_of_time(
+                        if time_utils.in_period_of_time(
                             e["timestamps"][j], self.leftbond, self.rightbond
                         ):
                             streams_of[i]["streams"] += 1
@@ -206,7 +207,7 @@ class GatherData:
                         }
                     ]
                 for j in range(len(e["timestamps"])):
-                    if time.in_period_of_time(
+                    if time_utils.in_period_of_time(
                         e["timestamps"][j], self.leftbond, self.rightbond
                     ):
                         streams_of[-1]["streams"] += 1
@@ -268,7 +269,7 @@ class GatherData:
         sum_listened = 0
         for e in self.info:
             for i in range(len(e["timestamps"])):
-                if time.in_period_of_time(
+                if time_utils.in_period_of_time(
                     e["timestamps"][i], self.leftbond, self.rightbond
                 ):
                     sum_listened += 1
@@ -284,8 +285,8 @@ class GatherData:
         :param latest: date in "yyyy.mm.dd-hh.mm.ss" format
         :type latest: str
         """
-        self.leftbond = time.convert_to_unix(earliest, -1)
-        self.rightbond = time.convert_to_unix(latest, -1)
+        self.leftbond = time_utils.convert_to_unix(earliest, -1)
+        self.rightbond = time_utils.convert_to_unix(latest, -1)
 
     def restore_bonds(self) -> None:
         """Restores default bonda for date range
@@ -305,8 +306,8 @@ class GatherData:
         earliest = 2147483647.0
         for i in range(len(self.info)):
             for j in range(len(self.info[i]["timestamps"])):
-                if time.convert_to_unix(self.info[i]["timestamps"][j]) < earliest:
-                    earliest = time.convert_to_unix(self.info[i]["timestamps"][j])
+                if time_utils.convert_to_unix(self.info[i]["timestamps"][j]) < earliest:
+                    earliest = time_utils.convert_to_unix(self.info[i]["timestamps"][j])
                     ret = self.info[i]
         return (ret, earliest)
 
@@ -321,8 +322,8 @@ class GatherData:
         latest = 0.0
         for i in range(len(self.info)):
             for j in range(len(self.info[i]["timestamps"])):
-                if time.convert_to_unix(self.info[i]["timestamps"][j]) > latest:
-                    latest = time.convert_to_unix(self.info[i]["timestamps"][j])
+                if time_utils.convert_to_unix(self.info[i]["timestamps"][j]) > latest:
+                    latest = time_utils.convert_to_unix(self.info[i]["timestamps"][j])
                     ret = self.info[i]
         return (ret, latest)
 
@@ -372,7 +373,7 @@ class GatherData:
         timestamps = []
         for e in self.info:
             for f in e["timestamps"]:
-                timestamps += [time.convert_to_unix(f)]
+                timestamps += [time_utils.convert_to_unix(f)]
         return timestamps
 
 
@@ -390,7 +391,7 @@ class Graph:
         for e in self.data.info:
             if e[aspect.value] == name:
                 for f in e["timestamps"]:
-                    if time.in_period_of_time(
+                    if time_utils.in_period_of_time(
                         f, self.data.leftbond, self.data.rightbond
                     ):
                         times += [f]
@@ -405,7 +406,7 @@ class Graph:
                     times[i], times[i + 1] = times[i + 1], times[i]
         for i in range(len(times)):
             times[i] = dt.datetime.utcfromtimestamp(
-                time.convert_to_unix(times[i])
+                time_utils.convert_to_unix(times[i])
             ) + dt.timedelta(hours=+1)
         return [
             [
