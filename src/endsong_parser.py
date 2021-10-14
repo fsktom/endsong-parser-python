@@ -146,6 +146,9 @@ class GatherData:
         """Returns all of a specfic aspect from dataset ordered by
         number of streams.
 
+        E.g.
+            [['title', 0.0, 2147483647.0], {'title': 'Last Train Home', 'artist': 'Pat Metheny Group', 'album': 'Still Life (Talking)', 'streams': 109}, {'title': 'LATATA', 'artist': '(G)I-DLE', 'album': 'I am', 'streams': 91}, <...>]
+
         Use "set_bounds" to set a specific date range
 
         :param aspect: desired aspect, can be Aspect.TRACK, Aspect.ALBUM
@@ -566,8 +569,10 @@ class DisplayData:
         dataArray = self.data.get_streams_of(aspect)
         print(
             "Between (UTC) {0} and {1}:".format(
-                dt.datetime.utcfromtimestamp(dataArray[0][1]) + dt.timedelta(hours=+1),
-                dt.datetime.utcfromtimestamp(dataArray[0][2]) + dt.timedelta(hours=+1),
+                # left bound
+                dt.datetime.utcfromtimestamp(dataArray[0][1]),
+                # right bound
+                dt.datetime.utcfromtimestamp(dataArray[0][2]),
             )
         )
         if dataArray[0][0] == "title":
@@ -850,17 +855,22 @@ class DisplayData:
         if not match:
             print(name + " not found")
 
-    def set_bounds(self, earliest, latest) -> None:
+    def set_bounds(
+        self, earliest_date: str, latest_date: str, tzoffset_to_utc: int = -1
+    ) -> None:
         """Set the desired time frame
 
         ``-hh.mm.ss`` is optional
 
-        :param earliest: date in "yyyy.mm.dd-hh.mm.ss" format
+        :param earliest: date in ""YYYY.MM.DD-hh.mm.ss"" format
         :type earliest: str
-        :param latest: date in "yyyy.mm.dd-hh.mm.ss" format
+        :param latest: date in ""YYYY.MM.DD-hh.mm.ss"" format
         :type latest: str
+        :param tzoffset_to_utc: difference (UTC - your timezone), defaults to -1
+            (UTC+1 (CET) -> UTC; UTC - UTC+1 = -1)
+        :type tzoffset_to_utc: int, optional
         """
-        self.data.set_bounds(earliest, latest)
+        self.data.set_bounds(earliest_date, latest_date, tzoffset_to_utc)
 
     def restore_bounds(self) -> None:
         """Restores default bounds

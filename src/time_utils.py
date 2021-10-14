@@ -56,11 +56,14 @@ def convert_to_unix(timestamp: str, tzoffset_to_utc=0) -> float:
     # if the "-hh.mm.ss" part is either missing, wrong or incomplete
     # it defaults to just the date
     except ValueError:
-        unix_time = dt.datetime(
-            int(timestamp[:4]),  # YYYY
-            int(timestamp[5:7]),  # MM
-            int(timestamp[8:10]),  # DD
-            tzinfo=dt.timezone.utc,
+        unix_time = (
+            dt.datetime(
+                int(timestamp[:4]),  # YYYY
+                int(timestamp[5:7]),  # MM
+                int(timestamp[8:10]),  # DD
+                tzinfo=dt.timezone.utc,
+            )
+            + dt.timedelta(hours=tzoffset_to_utc if tzoffset_to_utc != 0 else 0)
         ).timestamp()
 
     return unix_time
