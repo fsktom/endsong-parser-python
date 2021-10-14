@@ -70,8 +70,8 @@ class GatherData:
 
     def __init__(self, path: Union[str, List[str]], uri: bool = True) -> None:
         self.info = []
-        self.leftbond: float = 0.0
-        self.rightbond: float = 2147483647.0
+        self.leftbound: float = 0.0
+        self.rightbound: float = 2147483647.0
         self.collect_data(path, uri)
 
     def collect_data(self, path: Union[str, List[str]], uri: bool) -> None:
@@ -146,7 +146,7 @@ class GatherData:
         """Returns all of a specfic aspect from dataset ordered by
         number of streams.
 
-        Use "set_bonds" to set a specific date range
+        Use "set_bounds" to set a specific date range
 
         :param aspect: desired aspect, can be Aspect.TRACK, Aspect.ALBUM
             and Aspect.ARTIST
@@ -162,7 +162,7 @@ class GatherData:
         #     [aspect.value, self.__leftbond, self.__rightbond]
         # ]
         # TODO: correct type annotation.. !!!!!!!!!!!1
-        streams_of: Any = [[aspect.value, self.leftbond, self.rightbond]]
+        streams_of: Any = [[aspect.value, self.leftbound, self.rightbound]]
 
         for e in self.info:
             i = 1
@@ -171,7 +171,7 @@ class GatherData:
                 if e[aspect.value] == streams_of[i][aspect.value]:
                     for j in range(len(e["timestamps"])):
                         if time_utils.in_period_of_time(
-                            e["timestamps"][j], self.leftbond, self.rightbond
+                            e["timestamps"][j], self.leftbound, self.rightbound
                         ):
                             streams_of[i]["streams"] += 1
                     if aspect == Aspect.ARTIST:
@@ -208,7 +208,7 @@ class GatherData:
                     ]
                 for j in range(len(e["timestamps"])):
                     if time_utils.in_period_of_time(
-                        e["timestamps"][j], self.leftbond, self.rightbond
+                        e["timestamps"][j], self.leftbound, self.rightbound
                     ):
                         streams_of[-1]["streams"] += 1
                 if aspect == Aspect.ARTIST:
@@ -270,30 +270,37 @@ class GatherData:
         for e in self.info:
             for i in range(len(e["timestamps"])):
                 if time_utils.in_period_of_time(
-                    e["timestamps"][i], self.leftbond, self.rightbond
+                    e["timestamps"][i], self.leftbound, self.rightbound
                 ):
                     sum_listened += 1
         return sum_listened
 
-    def set_bonds(self, earliest, latest) -> None:
+    def set_bounds(
+        self, earliest_date: str, latest_date: str, tzoffset_to_utc: int = -1
+    ) -> None:
         """Set the desired time frame
 
         ``-hh.mm.ss`` is optional
 
-        :param earliest: date in "yyyy.mm.dd-hh.mm.ss" format
+        :param earliest: date in ""YYYY.MM.DD-hh.mm.ss"" format
         :type earliest: str
-        :param latest: date in "yyyy.mm.dd-hh.mm.ss" format
+        :param latest: date in ""YYYY.MM.DD-hh.mm.ss"" format
         :type latest: str
+        :param tzoffset_to_utc: difference (UTC - your timezone), defaults to -1
+            (UTC+1 (CET) -> UTC; UTC - UTC+1 = -1)
+        :type tzoffset_to_utc: int, optional
         """
-        self.leftbond = time_utils.convert_to_unix(earliest, -1)
-        self.rightbond = time_utils.convert_to_unix(latest, -1)
+        # TODO: maybe make date not string but custom type/object for date
+        self.leftbound = time_utils.convert_to_unix(earliest_date, tzoffset_to_utc)
+        self.rightbound = time_utils.convert_to_unix(latest_date, tzoffset_to_utc)
 
-    def restore_bonds(self) -> None:
-        """Restores default bonda for date range
-        (Unix time min and max)
+    def restore_bounds(self) -> None:
+        """Restores default bounds for date range
+
+        Sets bounds to 1970-01-01 till end of Unix time
         """
-        self.leftbond = 0.0
-        self.rightbond = 2147483647.0
+        self.leftbound = 0.0
+        self.rightbound = 2147483647.0
 
     def get_first_ever(self) -> tuple:
         """Returns first ever streamed song listed in endsong.json
@@ -392,7 +399,7 @@ class Graph:
             if e[aspect.value] == name:
                 for f in e["timestamps"]:
                     if time_utils.in_period_of_time(
-                        f, self.data.leftbond, self.data.rightbond
+                        f, self.data.leftbound, self.data.rightbound
                     ):
                         times += [f]
                 string += [e["artist"]]
@@ -492,7 +499,7 @@ class DisplayData:
     :type gatheredData: GatherData
     """
 
-    def __init__(self, gatheredData) -> None:
+    def __init__(self, gatheredData: GatherData) -> None:
         self.data = gatheredData
         self.sum_all = self.data.get_sum()
         self.first = self.data.get_first_ever()
@@ -558,7 +565,7 @@ class DisplayData:
 
         dataArray = self.data.get_streams_of(aspect)
         print(
-            "Between {0} and {1}:".format(
+            "Between (UTC) {0} and {1}:".format(
                 dt.datetime.utcfromtimestamp(dataArray[0][1]) + dt.timedelta(hours=+1),
                 dt.datetime.utcfromtimestamp(dataArray[0][2]) + dt.timedelta(hours=+1),
             )
@@ -843,7 +850,7 @@ class DisplayData:
         if not match:
             print(name + " not found")
 
-    def set_bonds(self, earliest, latest) -> None:
+    def set_bounds(self, earliest, latest) -> None:
         """Set the desired time frame
 
         ``-hh.mm.ss`` is optional
@@ -853,11 +860,14 @@ class DisplayData:
         :param latest: date in "yyyy.mm.dd-hh.mm.ss" format
         :type latest: str
         """
-        self.data.set_bonds(earliest, latest)
+        self.data.set_bounds(earliest, latest)
 
-    def restore_bonds(self) -> None:
-        """restores default"""
-        self.data.restore_bonds()
+    def restore_bounds(self) -> None:
+        """Restores default bounds
+
+        Sets bounds to 1970-01-01 till end of Unix time
+        """
+        self.data.restore_bounds()
 
     def list_with_names(self) -> None:
         """creates a file that contains all titles, artists and albums"""
@@ -885,6 +895,6 @@ class DisplayData:
 ## print_first_last prints first or last song of the data,
 ## graph_abs graphs absolute listened of aspect over time,
 ## graph_rel graphs realtive listened of aspect over time,
-## set_bonds sets a timeframe,
-## restore_bonds restores the default timeframe,
+## set_bounds sets a timeframe,
+## restore_bounds restores the default timeframe,
 ## list_with_names creates a list with all names
