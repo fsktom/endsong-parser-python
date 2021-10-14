@@ -297,6 +297,18 @@ class GatherData:
         self.leftbound = time_utils.convert_to_unix(earliest_date, tzoffset_to_utc)
         self.rightbound = time_utils.convert_to_unix(latest_date, tzoffset_to_utc)
 
+        # I think I should have done this in a different way
+        # (when catching the errors) but it's easier this way
+        if self.leftbound >= self.rightbound:
+            # message only if left>right
+            if self.leftbound > self.rightbound:
+                print(
+                    "The right bound is smaller than the left bound. The bounds have been reset!"
+                )
+            # but restore if both are 0
+            # (wrong input for set_bounds like set_bounds(2018, "2019") etc.)
+            self.restore_bounds()
+
     def restore_bounds(self) -> None:
         """Restores default bounds for date range
 
