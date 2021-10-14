@@ -35,3 +35,7 @@ gayy
 .. automodule:: endsong_parser
     :noindex:
     :members: init
+
+.. automodule:: time_utils
+    :noindex:
+    :members: convert_to_unix
