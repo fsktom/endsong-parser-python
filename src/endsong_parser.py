@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 import datetime as dt
 import json
 from enum import auto

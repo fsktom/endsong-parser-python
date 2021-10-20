@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+from code import InteractiveConsole
 from timeit import timeit
 from typing import List
 from typing import Tuple
@@ -51,3 +53,5 @@ if __name__ == "__main__":
     # print(timeit(init, number=5))
     d, g = init(paths)
     # print(timeit(d.print_top, number=5))
+
+    InteractiveConsole(locals=locals()).interact()
