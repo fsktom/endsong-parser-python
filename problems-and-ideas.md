@@ -11,6 +11,8 @@ Well, this script is not perfect. Here I will write about the problems that may 
 
 ## Suggestions / Ideas
 
+- IMPORTANT:
+  - SUCH DOCSTRING that VSC shows the correct docstring for each parameter as I'm writing (see how it's when typing the possible parameter for `range()`)
 - export the .json to a compaible format for [Last.fm Scrubbler](https://github.com/SHOEGAZEssb/Last.fm-Scrubbler-WPF) -> ListenBrainz
 - add the ability the view total time listened (in minutes/hours...)
 - change "title" aspect to "track"
