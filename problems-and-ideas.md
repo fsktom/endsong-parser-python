@@ -11,6 +11,7 @@ Well, this script is not perfect. Here I will write about the problems that may 
 
 ## Suggestions / Ideas
 
+- use case: Jupyter Notebook instead of interactive shell? (well both -> add instructions/try it out)
 - use Cython to speed up some stuff
   - [tutorial](https://youtu.be/mXuEoqK4bEc)
   - maybe the process of gathering data for relative graphs?
