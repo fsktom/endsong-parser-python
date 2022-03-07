@@ -64,3 +64,5 @@ Well, this script is not perfect. Here I will write about the problems that may 
 - pylint and mypy - [Instaloader contributing page](https://instaloader.github.io/contributing.html)
 - also, for Sphinx see e.g. Instaloader class in this file [Instaloader main file](https://github.com/instaloader/instaloader/blob/master/instaloader/instaloader.py)
 - comparison of `endsong.json` files from two different people (two different sets)
+- maybe write a library in Rust for gathering/calculating data and the UI in Python?
+  - [r/rust thread](https://www.reddit.com/r/rust/comments/t8k9lo/rust_and_python_working_together/) 
