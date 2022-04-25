@@ -66,3 +66,26 @@ Well, this script is not perfect. Here I will write about the problems that may 
 - comparison of `endsong.json` files from two different people (two different sets)
 - maybe write a library in Rust for gathering/calculating data and the UI in Python?
   - [r/rust thread](https://www.reddit.com/r/rust/comments/t8k9lo/rust_and_python_working_together/) 
+- for print aspect add extended=False parameter -> maybe like analyze the data to look for day/week with most streams etc
+- Instead of having to put in Aspect.ARTIST e.g. allow "artist" but look of the parameter is in Aspect
+- View % of total listens are top n aspects (e.g. how many % of total listens are my top 10 songs)
+- Add resolution Parameter to rel_graph
+  - Day, week maybe month as well as lowest
+  - Because with lower resolution it should take a shorter amount of time to generate Right?
+- Wrapper functions? For exception handling?
+  - One function for the functionality (internal/private) and another intended to be used by the user?
+- Usage: either python interactive shell or Jupiter notebook
+- Print list aspect: percent choose parent
+  - e.g for song: % of album or artist or whole (in selected time frame)
+- Combining aspects
+  - e.g. graph: 2 graphs for two aspects or one graph but whose values are summed up!
+  - e.g. for stuff like japanese indie rock
+    - For which there is not a single artist/album etc
+- Wrapper functions/class for user interface
+  - Instead of private methods make a wrapper class that is supposed to just call other classes' functions?
+- Idk if it's possible rn because I haven't worked with/on it for a long time
+  - But a relative graph of an aspect above it:
+    - eg % a song of album/artist/whole, % an album of artist/whole, % an artist of whole
+  - Well rel. Graph + Option for printing (In the given timeframe)
+- CACHE
+  - so that the program doesn't have to calcualte EVERYTHING every time
